@@ -1,5 +1,7 @@
 """Admin classes for django-usertools."""
 
+from functools import partial
+
 from django.conf import settings
 from django.conf.urls.defaults import url, patterns
 from django.contrib.auth.models import User, Group
@@ -25,6 +27,8 @@ class UserAdmin(UserAdminBase, AdminBase):
     
     search_fields = ("username", "first_name", "last_name", "email",)
     
+    actions = ("activate_selected", "deactivate_selected",)
+    
     list_display = ("username", "first_name", "last_name", "email", "is_staff", "is_active",)
     
     list_filter = ("is_staff", "is_active", "groups",)
@@ -46,6 +50,86 @@ class UserAdmin(UserAdminBase, AdminBase):
     )
     
     filter_horizontal = ("groups", "user_permissions",)
+    
+    # Custom actions.
+    
+    def activate_selected(self, request, qs):
+        """Activates the selected users."""
+        qs.update(is_active=True)
+        count = qs.count()
+        self.message_user(request, u"{count} {item} marked as active.".format(
+            count = count,
+            item = count != 1 and "users were" or "user was",
+        ))
+    activate_selected.short_description = "Mark selected users as active"
+    
+    def deactivate_selected(self, request, qs):
+        """Deactivates the selected users."""
+        qs.update(is_active=False)
+        count = qs.count()
+        self.message_user(request, u"{count} {item} marked as inactive.".format(
+            count = count,
+            item = count != 1 and "users were" or "user was",
+        ))
+    deactivate_selected.short_description = "Mark selected users as inactive"
+    
+    def add_selected_to_group(self, request, qs, group):
+        """Adds the selected users to a group."""
+        for user in qs:
+            user.groups.add(group)
+        count = len(qs)
+        self.message_user(request, u"{count} {item} added to {group}.".format(
+            count = count,
+            item = count != 1 and "users were" or "user was",
+            group = group,
+        ))
+            
+    def remove_selected_from_group(self, request, qs, group):
+        """Removes the selected users from a group."""
+        for user in qs:
+            user.groups.remove(group)
+        count = len(qs)
+        self.message_user(request, u"{count} {item} removed from {group}.".format(
+            count = count,
+            item = count != 1 and "users were" or "user was",
+            group = group,
+        ))
+    
+    def get_actions(self, request):
+        """Returns the actions this admin class supports."""
+        actions = super(UserAdmin, self).get_actions(request)
+        # Add in the group actions.
+        groups = [
+            (unicode(group).replace(" ", "_").lower(), group)
+            for group
+            in Group.objects.all()
+        ]
+        # Create the add actions.
+        for group_slug, group in groups:
+            add_action_name = u"add_selected_to_{group_slug}".format(
+                group_slug = group_slug,
+            )
+            actions[add_action_name] = (
+                partial(self.__class__.add_selected_to_group, group=group),
+                add_action_name,
+                "Add selected users to {group}".format(
+                    group = group,
+                ),
+            )
+        # Create the remove actions.
+        for group_slug, group in groups:
+            remove_action_name = u"remove_selected_from_{group_slug}".format(
+                group_slug = group_slug,
+            )
+            actions[remove_action_name] = (
+                partial(self.__class__.remove_selected_from_group, group=group),
+                remove_action_name,
+                "Remove selected users from {group}".format(
+                    group = group,
+                ),
+            )
+        # All done!
+        return actions
     
     def get_urls(self):
         """Returns the URLs used by this admin class."""
