@@ -7,10 +7,9 @@ from django.conf.urls.defaults import url, patterns
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.admin import UserAdmin as UserAdminBase, GroupAdmin as GroupAdminBase
 from django.contrib import admin
-from django.contrib.admin import helpers
-from django.core.exceptions import PermissionDenied
 from django.db.models import Sum
-from django.shortcuts import render, get_object_or_404
+
+from usertools.forms import UserCreationForm
 
 
 # Mix in watson search, if available.
@@ -25,6 +24,10 @@ class UserAdmin(UserAdminBase, AdminBase):
 
     """Enhanced user admin class."""
     
+    add_form = UserCreationForm
+    
+    add_form_template = "admin/auth/user/add_form_usertools.html"
+    
     search_fields = ("username", "first_name", "last_name", "email",)
     
     actions = ("activate_selected", "deactivate_selected",)
@@ -36,6 +39,25 @@ class UserAdmin(UserAdminBase, AdminBase):
     fieldsets = (
         (None, {
             "fields": ("username", "is_staff", "is_active",),
+        }),
+        ("Personal information", {
+            "fields": ("first_name", "last_name", "email",),
+        }),
+        ("Groups", {
+            "fields": ("groups",),
+        }),
+        ("Advanced permissions", {
+            "fields": ("user_permissions", "is_superuser",),
+            "classes": ("collapse",),
+        }),
+    )
+    
+    add_fieldsets = (
+        (None, {
+            "fields": ("username", "is_staff",),
+        }),
+        ("Password", {
+            "fields": ("password1", "password2",),
         }),
         ("Personal information", {
             "fields": ("first_name", "last_name", "email",),
