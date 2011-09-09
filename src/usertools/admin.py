@@ -1,10 +1,14 @@
 """Admin classes for django-usertools."""
 
 from django.conf import settings
+from django.conf.urls.defaults import url, patterns
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.admin import UserAdmin as UserAdminBase, GroupAdmin as GroupAdminBase
 from django.contrib import admin
+from django.contrib.admin import helpers
+from django.core.exceptions import PermissionDenied
 from django.db.models import Sum
+from django.shortcuts import render, get_object_or_404
 
 
 # Mix in watson search, if available.
@@ -23,7 +27,33 @@ class UserAdmin(UserAdminBase, AdminBase):
     
     list_display = ("username", "first_name", "last_name", "email", "is_staff", "is_active",)
     
-    list_filter = ("is_staff", "is_active",)
+    list_filter = ("is_staff", "is_active", "groups",)
+    
+    fieldsets = (
+        (None, {
+            "fields": ("username", "is_staff", "is_active",),
+        }),
+        ("Personal information", {
+            "fields": ("first_name", "last_name", "email",),
+        }),
+        ("Groups", {
+            "fields": ("groups",),
+        }),
+        ("Advanced permissions", {
+            "fields": ("user_permissions", "is_superuser",),
+            "classes": ("collapse",),
+        }),
+    )
+    
+    filter_horizontal = ("groups", "user_permissions",)
+    
+    def get_urls(self):
+        """Returns the URLs used by this admin class."""
+        urlpatterns = super(UserAdmin, self).get_urls()
+        admin_view = self.admin_site.admin_view
+        urlpatterns = patterns("",
+        ) + urlpatterns
+        return urlpatterns
     
 
 # Automatcally re-register the User model with the enhanced admin class.    
