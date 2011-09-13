@@ -50,6 +50,30 @@ class UserAdminTest(AdminTestBase):
         self.assertRedirects(response, self.changelist_url)
         self.assertEqual(User.objects.get(id=self.user.id).is_active, False)
         
+    def testAddSelectedToGroupAction(self):
+        group = Group.objects.create(
+            name = "Foo group",
+        )
+        response = self.client.post(self.changelist_url, {
+            "action": "add_selected_to_foo_group",
+            "_selected_action": self.user.id,
+        })
+        self.assertRedirects(response, self.changelist_url)
+        self.assertEqual(list(User.objects.get(id=self.user.id).groups.all()), [group])
+        
+    def testRemoveSelectedFromGroupAction(self):
+        group = Group.objects.create(
+            name = "Foo group",
+        )
+        self.user.groups.add(group)
+        self.assertEqual(list(User.objects.get(id=self.user.id).groups.all()), [group])
+        response = self.client.post(self.changelist_url, {
+            "action": "remove_selected_from_foo_group",
+            "_selected_action": self.user.id,
+        })
+        self.assertRedirects(response, self.changelist_url)
+        self.assertEqual(list(User.objects.get(id=self.user.id).groups.all()), [])
+        
         
 class GroupAdminTest(AdminTestBase):
 
