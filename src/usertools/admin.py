@@ -179,7 +179,6 @@ class GroupAdmin(GroupAdminBase, AdminBase):
         qs = qs.annotate(
             user_count = Count("user"),
         )
-        print qs.query
         return qs
         
     def get_user_count(self, obj):
