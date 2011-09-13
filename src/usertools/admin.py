@@ -183,7 +183,7 @@ class GroupAdmin(GroupAdminBase, AdminBase):
         
     def get_user_count(self, obj):
         """Returns the number of users in the given group."""
-        return obj.user_count or 0
+        return obj.user_count
     get_user_count.short_description = "members"
     
     
