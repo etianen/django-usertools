@@ -7,7 +7,7 @@ from django.conf.urls.defaults import url, patterns
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.admin import UserAdmin as UserAdminBase, GroupAdmin as GroupAdminBase
 from django.contrib import admin
-from django.db.models import Sum
+from django.db.models import Count
 
 from usertools.forms import UserCreationForm
 
@@ -177,8 +177,9 @@ class GroupAdmin(GroupAdminBase, AdminBase):
         """Modifies the queryset."""
         qs = super(GroupAdmin, self).queryset(request)
         qs = qs.annotate(
-            user_count = Sum("user"),
+            user_count = Count("user"),
         )
+        print qs.query
         return qs
         
     def get_user_count(self, obj):
