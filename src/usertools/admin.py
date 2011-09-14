@@ -122,7 +122,10 @@ class UserAdmin(UserAdminBase, AdminBase):
         actions = super(UserAdmin, self).get_actions(request)
         # Add in the group actions.
         groups = [
-            (unicode(group).replace(" ", "_").lower(), group)
+            (u"{slug}_{pk}".format(
+                slug = unicode(group).replace(" ", "_").lower(),
+                pk = group.pk,
+            ), group)
             for group
             in Group.objects.all()
         ]

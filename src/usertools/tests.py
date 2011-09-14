@@ -55,7 +55,7 @@ class UserAdminTest(AdminTestBase):
             name = "Foo group",
         )
         response = self.client.post(self.changelist_url, {
-            "action": "add_selected_to_foo_group",
+            "action": "add_selected_to_foo_group_{pk}".format(pk=group.pk),
             "_selected_action": self.user.id,
         })
         self.assertRedirects(response, self.changelist_url)
@@ -68,7 +68,7 @@ class UserAdminTest(AdminTestBase):
         self.user.groups.add(group)
         self.assertEqual(list(User.objects.get(id=self.user.id).groups.all()), [group])
         response = self.client.post(self.changelist_url, {
-            "action": "remove_selected_from_foo_group",
+            "action": "remove_selected_from_foo_group_{pk}".format(pk=group.pk),
             "_selected_action": self.user.id,
         })
         self.assertRedirects(response, self.changelist_url)
