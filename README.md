@@ -1,7 +1,7 @@
 django-usertools
 ================
 
-**django-usertools** is a fire-and-forget enhancement to the standard Django user admin.
+**django-usertools** is a fire-and-forget enhancement to the Django user admin.
 
 
 Features
