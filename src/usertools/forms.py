@@ -9,7 +9,7 @@ from django.utils.text import capfirst
 
 def get_default_groups():
     """Returns the default groups for a user."""
-    return Group.objects.filter(name__iexact="Administrators")
+    return Group.objects.filter(name="Administrators")
 
 
 class UserCreationForm(UserCreationFormBase):

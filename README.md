@@ -18,6 +18,21 @@ Installation
 1.  Checkout the latest django-usertools release and copy or symlink the `src/usertools` directory into your `PYTHONPATH`.
 2.  Add `'usertools'` to your `INSTALLED_APPS` setting.
 
+
+Management commands
+-------------------
+
+*   **syncgroups:** Create or maintain the set of default administrations groups. Can be safely run multiple times.
+
+
+Default administration groups
+-----------------------------
+
+The syncgroups command sets up two default administration groups:
+
+*   **Administrators:** Users with the right to edit everything except Group models.
+*   **Editors:** Users with the right to edit everything except Group and User models.
+
     
 More information
 ----------------
