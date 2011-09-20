@@ -114,8 +114,8 @@ class UserAdmin(UserAdminBase, AdminBase):
     
     # Custom actions.
     
-    def do_send_password_email(self, request, user, subject, template_name):
-        """Sends a password mutation email."""
+    def do_send_invitation_email(self, request, user):
+        """Sends an invitation email to the given user."""
         confirmation_url = request.build_absolute_uri(
             reverse("{admin_site}:auth_user_invite_confirm".format(
                 admin_site = self.admin_site.name,
@@ -125,11 +125,10 @@ class UserAdmin(UserAdminBase, AdminBase):
             })
         )
         send_mail(
-            u"{prefix}{subject}".format(
+            u"{prefix}You have been invited to create an account".format(
                 prefix = settings.EMAIL_SUBJECT_PREFIX,
-                subject = subject,
             ),
-            template.loader.render_to_string(template_name, {
+            template.loader.render_to_string("admin/auth/user/invite_email.txt", {
                 "user": user,
                 "confirmation_url": confirmation_url,
                 "sender": request.user,
@@ -141,10 +140,6 @@ class UserAdmin(UserAdminBase, AdminBase):
                 email = user.email,
             ),),
         )
-        
-    def do_send_invitation_email(self, request, user):
-        """Sends an invitation email to the given user."""
-        self.do_send_password_email(request, user, "You have been invited to create an account", "admin/auth/user/invite_email.txt")
     
     def send_invitation_email(self, request, qs):
         """Sends a recovery email to the selected users."""

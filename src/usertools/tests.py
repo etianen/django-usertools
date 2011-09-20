@@ -4,7 +4,10 @@ from django.contrib import admin
 from django.conf.urls.defaults import patterns, url, include
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User, Group
+from django.core import mail
 from django.test import TestCase
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import int_to_base36
 
 
 admin.autodiscover()
@@ -87,6 +90,43 @@ class UserAdminTest(AdminTestBase):
         })
         self.assertRedirects(response, self.changelist_url)
         self.assertEqual(list(User.objects.get(id=self.user.id).groups.all()), [])
+        
+    def testSendInvitationEmailAction(self):
+        # Try to render the form.
+        response = self.client.get("/admin/auth/user/invite/")
+        self.assertEqual(response.status_code, 200)
+        # Invite a user.
+        response = self.client.post("/admin/auth/user/invite/", {
+            "username": "bar",
+            "email": "bar@foo.com",
+            "first_name": "Bar",
+            "last_name": "Foo",
+        })
+        self.assertRedirects(response, "/admin/auth/user/")
+        self.assertEqual(len(mail.outbox), 1)
+        user = User.objects.get(username="bar")
+        self.assertTrue(user.is_staff)
+        self.assertFalse(user.is_active)
+        # Log out from the admin system.
+        self.client.logout()
+        # Try to complete the signup.
+        confirmation_url = reverse("admin:auth_user_invite_confirm", kwargs = {
+            "uidb36": int_to_base36(user.id),
+            "token": default_token_generator.make_token(user),
+        })
+        response = self.client.post(confirmation_url, {
+            "password1": "password",
+            "password2": "password",
+        })
+        self.assertRedirects(response, "/admin/")
+        user = User.objects.get(username=user.username)
+        self.assertTrue(user.is_active)
+        # Has the link now expired?
+        response = self.client.post(confirmation_url, {
+            "password1": "password",
+            "password2": "password",
+        })
+        self.assertEqual(response.status_code, 200)  # 200 status means an error message.
         
         
 class GroupAdminTest(AdminTestBase):
