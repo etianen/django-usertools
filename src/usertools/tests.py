@@ -94,7 +94,7 @@ class UserAdminTest(AdminTestBase):
     
     def testSendInvitationEmailAction(self):
         response = self.client.post(self.changelist_url, {
-            "action": "send_invitation_email_to_selected",
+            "action": "invite_selected",
             "_selected_action": self.user.id,
         })
         self.assertRedirects(response, self.changelist_url)
