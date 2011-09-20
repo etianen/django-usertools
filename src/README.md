@@ -25,11 +25,11 @@ Installation
 More information
 ----------------
 
-The django-watson project was developed by Dave Hall. You can get the code
-from the [django-watson project site][].
+The django-usertools project was developed by Dave Hall. You can get the code
+from the [django-usertools project site][].
 
-[django-watson project site]: http://github.com/etianen/django-watson
-    "django-watson on GitHub"
+[django-usertools project site]: http://github.com/etianen/django-usertools
+    "django-usertools on GitHub"
     
 Dave Hall is a freelance web developer, based in Cambridge, UK. You can usually
 find him on the Internet in a number of different places:
