@@ -47,7 +47,7 @@ class UserAdmin(UserAdminBase, AdminBase):
     
     search_fields = ("username", "first_name", "last_name", "email",)
     
-    actions = ("activate_selected", "deactivate_selected",)
+    actions = ("send_invitation_email", "activate_selected", "deactivate_selected",)
     
     list_display = ("username", "first_name", "last_name", "email", "is_staff", "is_active",)
     
@@ -113,6 +113,50 @@ class UserAdmin(UserAdminBase, AdminBase):
     filter_horizontal = ("groups", "user_permissions",)
     
     # Custom actions.
+    
+    def do_send_password_email(self, request, user, subject, template_name):
+        """Sends a password mutation email."""
+        confirmation_url = request.build_absolute_uri(
+            reverse("{admin_site}:auth_user_invite_confirm".format(
+                admin_site = self.admin_site.name,
+            ), kwargs = {
+                "uidb36": int_to_base36(user.id),
+                "token": default_token_generator.make_token(user),
+            })
+        )
+        send_mail(
+            u"{prefix}{subject}".format(
+                prefix = settings.EMAIL_SUBJECT_PREFIX,
+                subject = subject,
+            ),
+            template.loader.render_to_string(template_name, {
+                "user": user,
+                "confirmation_url": confirmation_url,
+                "sender": request.user,
+            }),
+            settings.DEFAULT_FROM_EMAIL,
+            (u"{first_name} {last_name} <{email}>".format(
+                first_name = user.first_name,
+                last_name = user.last_name,
+                email = user.email,
+            ),),
+        )
+        
+    def do_send_invitation_email(self, request, user):
+        """Sends an invitation email to the given user."""
+        self.do_send_password_email(request, user, "You have been invited to create an account", "admin/auth/user/invite_email.txt")
+    
+    def send_invitation_email(self, request, qs):
+        """Sends a recovery email to the selected users."""
+        count = 0
+        for user in qs.iterator():
+            self.do_send_invitation_email(request, user)
+            count += 1
+        self.message_user(request, u"{count} {item} sent an invitation email.".format(
+            count = count,
+            item = count != 1 and "users were" or "user was",
+        ))
+    send_invitation_email.short_description = "Send an invitation email to selected users"
     
     def activate_selected(self, request, qs):
         """Activates the selected users."""
@@ -230,31 +274,7 @@ class UserAdmin(UserAdminBase, AdminBase):
                 user.save()
                 form.save_m2m()
                 # Send an invitation email.
-                confirmation_url = request.build_absolute_uri(
-                    reverse("{admin_site}:auth_user_invite_confirm".format(
-                        admin_site = self.admin_site.name,
-                    ), kwargs = {
-                        "uidb36": int_to_base36(user.id),
-                        "token": default_token_generator.make_token(user),
-                    })
-                )
-                send_mail(
-                    u"{prefix}You have been invited to create an account".format(
-                        prefix = settings.EMAIL_SUBJECT_PREFIX,
-                        
-                    ),
-                    template.loader.render_to_string("admin/auth/user/invite_email.txt", {
-                        "user": user,
-                        "confirmation_url": confirmation_url,
-                        "sender": request.user,
-                    }),
-                    settings.DEFAULT_FROM_EMAIL,
-                    (u"{first_name} {last_name} <{email}>".format(
-                        first_name = user.first_name,
-                        last_name = user.last_name,
-                        email = user.email,
-                    ),),
-                )
+                self.do_send_invitation_email(request, user)
                 # Message the user.
                 self.message_user(request, u"An invitation email has been sent to {email}.".format(
                     email = user.email,
