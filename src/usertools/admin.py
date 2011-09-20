@@ -47,7 +47,7 @@ class UserAdmin(UserAdminBase, AdminBase):
     
     search_fields = ("username", "first_name", "last_name", "email",)
     
-    actions = ("send_invitation_email", "activate_selected", "deactivate_selected",)
+    actions = ("send_invitation_email_to_selected", "activate_selected", "deactivate_selected",)
     
     list_display = ("username", "first_name", "last_name", "email", "is_staff", "is_active",)
     
@@ -141,8 +141,8 @@ class UserAdmin(UserAdminBase, AdminBase):
             ),),
         )
     
-    def send_invitation_email(self, request, qs):
-        """Sends a recovery email to the selected users."""
+    def send_invitation_email_to_selected(self, request, qs):
+        """Sends an invitation email to the selected users."""
         count = 0
         for user in qs.iterator():
             self.do_send_invitation_email(request, user)
@@ -151,7 +151,7 @@ class UserAdmin(UserAdminBase, AdminBase):
             count = count,
             item = count != 1 and "users were" or "user was",
         ))
-    send_invitation_email.short_description = "Send an invitation email to selected users"
+    send_invitation_email_to_selected.short_description = "Send an invitation email to selected users"
     
     def activate_selected(self, request, qs):
         """Activates the selected users."""

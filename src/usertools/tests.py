@@ -90,8 +90,16 @@ class UserAdminTest(AdminTestBase):
         })
         self.assertRedirects(response, self.changelist_url)
         self.assertEqual(list(User.objects.get(id=self.user.id).groups.all()), [])
-        
+    
     def testSendInvitationEmailAction(self):
+        response = self.client.post(self.changelist_url, {
+            "action": "send_invitation_email_to_selected",
+            "_selected_action": self.user.id,
+        })
+        self.assertRedirects(response, self.changelist_url)
+        self.assertEqual(len(mail.outbox), 1)
+        
+    def testInviteUser(self):
         # Try to render the form.
         response = self.client.get("/admin/auth/user/invite/")
         self.assertEqual(response.status_code, 200)
