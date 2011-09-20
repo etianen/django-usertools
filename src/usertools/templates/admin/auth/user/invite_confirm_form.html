@@ -1,0 +1,47 @@
+{% extends "admin/base_site.html" %}
+{% load adminmedia %}
+
+
+{% block extrastyle %}
+    {{block.super}}
+    <link rel="stylesheet" type="text/css" href="{% admin_media_prefix %}css/forms.css" />
+{% endblock %}
+
+
+{% block breadcrumbs %}
+
+{% endblock %}
+
+
+{% block content %}
+    <div id="content-main">
+        
+        {% if valid_link %}
+        
+            <p>Your admin username is <strong>{{user.username}}</strong>.
+            Please enter your new account password in the form below.</p>
+    
+            <form method="post" action="">
+            
+                {% csrf_token %}
+            
+                {% for fieldset in adminform %}
+                    {% include "admin/includes/fieldset.html" %}
+                {% endfor %}
+                
+                <div class="submit-row">
+                    <input type="submit" class="default" value="Create account"/>
+                </div>
+                
+            </form>
+            
+        {% else %}
+        
+            <p>We're sorry, but this link has expired.</p>
+            
+            <p>Please ask your site administrator to send you a password recovery email.</p>
+        
+        {% endif %}
+
+    </div>
+{% endblock %}

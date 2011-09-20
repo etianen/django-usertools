@@ -2,14 +2,23 @@
 
 from functools import partial
 
+from django import template
 from django.conf import settings
 from django.conf.urls.defaults import url, patterns
 from django.contrib.auth.models import User, Group
+from django.contrib.auth.forms import AdminPasswordChangeForm
 from django.contrib.auth.admin import UserAdmin as UserAdminBase, GroupAdmin as GroupAdminBase
-from django.contrib import admin
+from django.contrib import admin, auth
+from django.core.exceptions import PermissionDenied
+from django.core.urlresolvers import reverse
+from django.core.mail import send_mail
+from django.db import transaction
 from django.db.models import Count
+from django.shortcuts import render, redirect
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import int_to_base36, base36_to_int
 
-from usertools.forms import UserCreationForm
+from usertools.forms import UserCreationForm, UserInviteForm
 
 
 # Mix in watson search, if available.
@@ -26,7 +35,15 @@ class UserAdmin(UserAdminBase, AdminBase):
     
     add_form = UserCreationForm
     
+    invite_form = UserInviteForm
+    
+    invite_confirm_form = AdminPasswordChangeForm
+    
     add_form_template = "admin/auth/user/add_form_usertools.html"
+    
+    invite_form_template = "admin/auth/user/invite_form.html"
+    
+    invite_confirm_form_template = "admin/auth/user/invite_confirm_form.html"
     
     search_fields = ("username", "first_name", "last_name", "email",)
     
@@ -68,6 +85,28 @@ class UserAdmin(UserAdminBase, AdminBase):
         ("Advanced permissions", {
             "fields": ("user_permissions", "is_superuser",),
             "classes": ("collapse",),
+        }),
+    )
+    
+    invite_fieldsets = (
+        (None, {
+            "fields": ("username",),
+        }),
+        ("Personal information", {
+            "fields": ("first_name", "last_name", "email",),
+        }),
+        ("Groups", {
+            "fields": ("groups",),
+        }),
+        ("Advanced permissions", {
+            "fields": ("user_permissions", "is_superuser",),
+            "classes": ("collapse",),
+        }),
+    )
+    
+    invite_confirm_fieldsets = (
+        (None, {
+            "fields": ("password1", "password2"),
         }),
     )
     
@@ -156,13 +195,141 @@ class UserAdmin(UserAdminBase, AdminBase):
         # All done!
         return actions
     
+    # Custom views.
+    
     def get_urls(self):
         """Returns the URLs used by this admin class."""
         urlpatterns = super(UserAdmin, self).get_urls()
         admin_view = self.admin_site.admin_view
         urlpatterns = patterns("",
+            url("^invite/$", admin_view(self.invite_user), name="auth_user_invite"),
+            url("^invite/(?P<uidb36>[^-]+)-(?P<token>[^/]+)/$", self.invite_user_confirm, name="auth_user_invite_confirm"),
         ) + urlpatterns
         return urlpatterns
+        
+    @transaction.commit_on_success
+    def invite_user(self, request):
+        """Sends an invitation email with a login token."""
+        # Check for add and change permission.
+        has_add_permission = self.has_add_permission(request)
+        has_change_permission = self.has_change_permission(request)
+        if not has_add_permission or not has_change_permission:
+            raise PermissionDenied
+        # Process the form.
+        InviteForm = self.get_form(request,
+            form = self.invite_form,
+            fields = admin.util.flatten_fieldsets(self.invite_fieldsets),
+        )
+        if request.method == "POST":
+            form = InviteForm(request.POST)
+            if form.is_valid():
+                # Save the user, marked as inactive.
+                user = form.save(commit=False)
+                user.is_active = False
+                user.is_staff = True
+                user.save()
+                form.save_m2m()
+                # Send an invitation email.
+                confirmation_url = request.build_absolute_uri(
+                    reverse("{admin_site}:auth_user_invite_confirm".format(
+                        admin_site = self.admin_site.name,
+                    ), kwargs = {
+                        "uidb36": int_to_base36(user.id),
+                        "token": default_token_generator.make_token(user),
+                    })
+                )
+                send_mail(
+                    u"{prefix}You have been invited to create an account".format(
+                        prefix = settings.EMAIL_SUBJECT_PREFIX,
+                        
+                    ),
+                    template.loader.render_to_string("admin/auth/user/invite_email.txt", {
+                        "user": user,
+                        "confirmation_url": confirmation_url,
+                        "sender": request.user,
+                    }),
+                    settings.DEFAULT_FROM_EMAIL,
+                    (u"{first_name} {last_name} <{email}>".format(
+                        first_name = user.first_name,
+                        last_name = user.last_name,
+                        email = user.email,
+                    ),),
+                )
+                # Message the user.
+                self.message_user(request, u"An invitation email has been sent to {email}.".format(
+                    email = user.email,
+                ))
+                # Redirect as appropriate.
+                return super(UserAdminBase, self).response_add(request, user)  # Using the superclass to avoid the built in munging of the add response.
+        else:
+            form = InviteForm()
+        # Create the admin form.    
+        admin_form = admin.helpers.AdminForm(form, self.invite_fieldsets, {})
+        # Render the template.
+        media = self.media + admin_form.media
+        return render(request, self.invite_form_template, {
+            "title": "Invite user",
+            "opts": self.model._meta,
+            "form": form,
+            "adminform": admin_form,
+            "media": media,
+            "add": True,
+            "change": False,
+            "is_popup": False,
+            "save_as": self.save_as,
+            "has_add_permission": has_add_permission,
+            "has_change_permission": has_change_permission,
+            "has_delete_permission": self.has_delete_permission(request),
+            "show_delete": False,
+        })
+        
+    def invite_user_confirm(self, request, uidb36, token):
+        """Performs confirmation of the invite user email."""
+        form = None
+        admin_form = None
+        # Get the user.
+        try:
+            uid_int = base36_to_int(uidb36)
+            user = User.objects.get(id=uid_int)
+        except (ValueError, User.DoesNotExist):
+            valid_link = False
+        else:
+            # Check the token.
+            valid_link = default_token_generator.check_token(user, token)
+            # Activate the account.
+            if valid_link:
+                # Process the form.
+                if request.method == "POST":
+                    form = self.invite_confirm_form(user, request.POST)
+                    if form.is_valid():
+                        user = form.save(commit=False)
+                        # Activate the user.
+                        user.is_active = True
+                        user.save()
+                        # Login the user.
+                        user = auth.authenticate(username=user.username, password=form.cleaned_data["password1"])
+                        auth.login(request, user)
+                        # Message and redirect.
+                        self.message_user(request, "Thanks for signing up! We've saved your password and logged you in.")
+                        return redirect("{admin_site}:index".format(
+                            admin_site = self.admin_site.name,
+                        ))
+                else:
+                    form = self.invite_confirm_form(user)
+                admin_form = admin.helpers.AdminForm(form, self.invite_confirm_fieldsets, {})
+        # Render the template.
+        if valid_link:
+            title = "Welcome to the site!"
+        else:
+            title = "This link has expired"
+        return render(request, self.invite_confirm_form_template, {
+            "title": title,
+            "opts": self.model._meta,
+            "valid_link": valid_link,
+            "form": form,
+            "adminform": admin_form,
+            "user": user,
+        })
     
 
 # Automatcally re-register the User model with the enhanced admin class.    

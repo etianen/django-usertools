@@ -1,0 +1,14 @@
+{% autoescape off %}Hi {{user.first_name}},
+
+You've been invited to create an admin account{% if sender.first_name and sender.last_name %} {{sender.first_name}} {{sender.last_name}}{% endif %}.
+
+Your name: {{user.first_name}} {{user.last_name}}
+Your username: {{user.username}}
+
+To accept this invitation, please click the following link.
+
+{{confirmation_url}}
+
+If clicking isn't working for you, simply paste the URL into your favorite web browser.
+
+See you soon!{% endautoescape %}
