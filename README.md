@@ -1,18 +1,15 @@
 django-usertools
 ================
 
-**django-usertools** is fire-and-forget enhancement to the standard Django user admin.
-
-It's just a single line of code to install.
+**django-usertools** is a fire-and-forget enhancement to the standard Django user admin.
 
 
 Features
 --------
 
-* Send invitation emails to your fellow admin users, allowing them to choose their own passwords.
-* Search through long lists of users using integrated [django-watson](https://github.com/etianen/django-watson) search.
-* Batch actions for managing users and groups.
-* Improved user admin form layout.
+* Send invitation emails to your fellow admin users, allowing them to choose their own password on first login.
+* Search through user lists using integrated [django-watson](https://github.com/etianen/django-watson) search.
+* Batch admin actions for managing users and groups.
 
 
 Installation
