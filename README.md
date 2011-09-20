@@ -30,7 +30,7 @@ Default administration groups
 
 The syncgroups command sets up two default administration groups:
 
-*   **Administrators:** Users with the right to edit everything except Group models.
+*   **Administrators:** Users with the right to edit everything.
 *   **Editors:** Users with the right to edit everything except Group and User models.
 
     

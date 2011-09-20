@@ -5,6 +5,7 @@ from django.conf.urls.defaults import patterns, url, include
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User, Group
 from django.core import mail
+from django.core.management import call_command
 from django.test import TestCase
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import int_to_base36
@@ -154,3 +155,12 @@ class GroupAdminTest(AdminTestBase):
         response = self.client.get(changelist_url)
         self.assertContains(response, "Foo group")
         self.assertContains(response, "<td>1</td>")
+        
+        
+class SyncGroupsCommandTest(TestCase):
+
+    def testSyncGroupsCommand(self):
+        call_command("syncgroups")
+        self.assertEqual(Group.objects.count(), 2)
+        self.assertEqual(Group.objects.filter(name="Administrators").count(), 1)
+        self.assertEqual(Group.objects.filter(name="Editors").count(), 1)

@@ -18,8 +18,7 @@ class Command(NoArgsCommand):
         # Create the administrators group.
         administrators, _ = Group.objects.get_or_create(name="Administrators")
         administrator_permissions = Permission.objects.exclude(
-            Q(content_type = ContentType.objects.get_for_model(Group)) |
-            Q(id__in = administrators.permissions.all())
+            Q(id__in = administrators.permissions.all()),
         )
         administrators.permissions.add(*administrator_permissions)
         if verbosity >= 2:
@@ -28,7 +27,7 @@ class Command(NoArgsCommand):
         editors, _ = Group.objects.get_or_create(name="Editors")
         editor_permissions = Permission.objects.exclude(
             Q(content_type__in = (ContentType.objects.get_for_model(Group), ContentType.objects.get_for_model(User),)) |
-            Q(id__in = editors.permissions.all())
+            Q(id__in = editors.permissions.all()),
         )
         editors.permissions.add(*editor_permissions)
         if verbosity >= 2:
