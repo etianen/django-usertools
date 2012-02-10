@@ -1,0 +1,4 @@
+include src/usertools/templates/admin/auth/user/*.html
+include src/usertools/locale/*/LC_MESSAGES/django.*
+include LICENSE
+include README.md
