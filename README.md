@@ -33,6 +33,18 @@ The syncgroups command sets up two default administration groups:
 *   **Administrators:** Users with the right to edit everything.
 *   **Editors:** Users with the right to edit everything except Group and User models.
 
+
+Documentation
+-------------
+
+django-usertools is a simple plugin, so all required documentation can be found in this readme file.
+
+You can keep up to date with the latest announcements by joining the
+[django-usertools discussion group][].
+
+[django-usertools discussion group]: http://groups.google.com/group/django-usertools
+    "django-usertools Google Group"
+
     
 More information
 ----------------
