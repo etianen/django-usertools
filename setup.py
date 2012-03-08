@@ -8,7 +8,7 @@ setup(
     author = "Dave Hall",
     author_email = "dave@etianen.com",
     url = "http://github.com/etianen/django-usertools",
-    download_url = "http://github.com/downloads/etianen/django-watson/django-usertools-1.0.0.tar.gz",
+    download_url = "http://github.com/downloads/etianen/django-usertools/django-usertools-1.0.0.tar.gz",
     zip_safe = False,
     packages = [
         "usertools",
