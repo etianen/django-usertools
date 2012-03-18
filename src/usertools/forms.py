@@ -1,7 +1,7 @@
 """Forms used by django-usertools."""
 
 from django import forms
-from django.contrib.auth.forms import UserCreationForm as UserCreationFormBase
+from django.contrib.auth.forms import UserCreationForm as UserCreationFormBase, UserChangeForm as UserChangeFormBase
 from django.contrib.auth.models import User, Group
 from django.contrib.admin.widgets import FilteredSelectMultiple, AdminTextInputWidget
 from django.utils.text import capfirst
@@ -74,3 +74,12 @@ class UserInviteForm(forms.ModelForm):
     class Meta:
         fields = ("username", "first_name", "last_name", "email", "groups", "user_permissions", "is_superuser",)
         model = User
+        
+        
+class UserChangeForm(UserChangeFormBase):
+    
+    """A customized user change form."""
+    
+    def clean_password(self):
+        # HACK: Needed to prevent crash when saving user.
+        return self.initial.get("password", "")
