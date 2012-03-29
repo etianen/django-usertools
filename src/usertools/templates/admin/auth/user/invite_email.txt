@@ -2,7 +2,6 @@
 
 You've been invited to create an admin account{% if sender.first_name and sender.last_name %} by {{sender.first_name}} {{sender.last_name}}{% endif %}.
 
-Your name: {{user.first_name}} {{user.last_name}}
 Your username: {{user.username}}
 
 To accept this invitation, please click the following link.
