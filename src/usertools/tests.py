@@ -9,6 +9,7 @@ from django.core.management import call_command
 from django.test import TestCase
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import int_to_base36
+from django.conf import settings
 
 
 admin.autodiscover()
@@ -35,10 +36,11 @@ class AdminTestBase(TestCase):
         self.user.set_password("bar")
         self.user.save()
         # Log the user in.
-        self.client.login(
-            username = "foo",
-            password = "bar",
-        )
+        with self.settings(INSTALLED_APPS=tuple(set(tuple(settings.INSTALLED_APPS) + ("django.contrib.sessions",)))):  # HACK: Without this the client won't log in, for some reason.
+            self.client.login(
+                username = "foo",
+                password = "bar",
+            )
         
         
 class UserAdminTest(AdminTestBase):
