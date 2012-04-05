@@ -36,7 +36,13 @@ class AdminTestBase(TestCase):
         self.user.set_password("bar")
         self.user.save()
         # Log the user in.
-        with self.settings(INSTALLED_APPS=tuple(set(tuple(settings.INSTALLED_APPS) + ("django.contrib.sessions",)))):  # HACK: Without this the client won't log in, for some reason.
+        if hasattr(self, "settings"):
+            with self.settings(INSTALLED_APPS=tuple(set(tuple(settings.INSTALLED_APPS) + ("django.contrib.sessions",)))):  # HACK: Without this the client won't log in, for some reason.
+                self.client.login(
+                    username = "foo",
+                    password = "bar",
+                )
+        else:
             self.client.login(
                 username = "foo",
                 password = "bar",
