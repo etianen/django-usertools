@@ -310,6 +310,7 @@ class UserAdmin(UserAdminBase, AdminBase):
             user = User.objects.get(id=uid_int)
         except (ValueError, User.DoesNotExist):
             valid_link = False
+            user = None
         else:
             # Check the token.
             valid_link = default_token_generator.check_token(user, token)
