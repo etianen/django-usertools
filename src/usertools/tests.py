@@ -10,6 +10,7 @@ from django.test import TestCase
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import int_to_base36
 from django.conf import settings
+from django import template
 
 from usertools.helpers import get_display_name
 
@@ -26,6 +27,16 @@ class HelpersTest(TestCase):
         user = User()
         self.assertEqual(get_display_name(user), "Anonymous")
         self.assertEqual(get_display_name(user, fallback="Baz"), "Baz")
+
+
+class TemplateTagsTest(TestCase):
+    
+    def testDisplayNameFilter(self):
+        user = User(first_name="Foo", last_name="Bar")
+        self.assertEqual(template.Template("{% load usertools %}{{user|display_name}}").render(template.Context({"user": user})), "Foo Bar")
+        user = User()
+        self.assertEqual(template.Template("{% load usertools %}{{user|display_name}}").render(template.Context({"user": user})), "Anonymous")
+        self.assertEqual(template.Template("{% load usertools %}{{user|display_name:'Baz'}}").render(template.Context({"user": user})), "Baz")
 
 
 admin.autodiscover()
