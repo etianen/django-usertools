@@ -11,6 +11,22 @@ from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import int_to_base36
 from django.conf import settings
 
+from usertools.helpers import get_display_name
+
+
+class HelpersTest(TestCase):
+    
+    def testDisplayName(self):
+        user = User(first_name="Foo", last_name="Bar")
+        self.assertEqual(get_display_name(user), "Foo Bar")
+        user = User(first_name="Foo")
+        self.assertEqual(get_display_name(user), "Foo")
+        user = User(last_name="Bar")
+        self.assertEqual(get_display_name(user), "Bar")
+        user = User()
+        self.assertEqual(get_display_name(user), "Anonymous")
+        self.assertEqual(get_display_name(user, fallback="Baz"), "Baz")
+
 
 admin.autodiscover()
 
