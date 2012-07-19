@@ -12,32 +12,19 @@ Features
 * Batch admin actions for managing users and groups.
 
 
-Installation
-------------
-
-1.  Checkout the latest django-usertools release and copy or symlink the `src/usertools` directory into your `PYTHONPATH`.
-2.  Add `'usertools'` to your `INSTALLED_APPS` setting.
-
-
-Management commands
--------------------
-
-*   **syncgroups:** Create or maintain the set of default administrations groups. Can be safely run multiple times.
-
-
-Default administration groups
------------------------------
-
-The syncgroups command sets up two default administration groups:
-
-*   **Administrators:** Users with the right to edit everything.
-*   **Editors:** Users with the right to edit everything except Group and User models.
-
-
 Documentation
 -------------
 
-django-usertools is a simple plugin, so all required documentation can be found in this readme file.
+Please read the [Getting Started][] guide for more information.
+
+[Getting Started]: https://github.com/etianen/django-usertools/wiki
+    "Getting started with django-usertools"
+    
+Download instructions, bug reporting and links to full documentation can be
+found at the [main project website][].
+
+[main project website]: http://github.com/etianen/django-usertools
+    "django-usertools on GitHub"
 
 You can keep up to date with the latest announcements by joining the
 [django-usertools discussion group][].
