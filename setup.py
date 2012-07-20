@@ -14,6 +14,8 @@ setup(
         "usertools",
         "usertools.management",
         "usertools.management.commands",
+        "usertools.templatetags",
+        "usertools.migrations_auth",
     ],
     package_dir = {
         "": "src",
