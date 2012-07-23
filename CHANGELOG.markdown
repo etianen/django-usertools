@@ -6,6 +6,7 @@ django-usertools changelog
 ------------------
 
 * Django 1.4 compatibility.
+* Optional database migrations and patches to increase the size of the username field to 75 characters.
 
 
 1.0.0 - 10/10/2012

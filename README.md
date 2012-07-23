@@ -10,6 +10,7 @@ Features
 * Send invitation emails to your fellow admin users, allowing them to choose their own password on first login.
 * Search through user lists using integrated [django-watson](https://github.com/etianen/django-watson) search.
 * Batch admin actions for managing users and groups.
+* Optional database migrations and patches for increasing the size of the username field to 75 characters.
 
 
 Documentation
