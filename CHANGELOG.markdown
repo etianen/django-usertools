@@ -2,6 +2,12 @@ django-usertools changelog
 ==========================
 
 
+1.0.2 - 05/09/2012
+------------------
+
+* Including email templates in source package.
+
+
 1.0.1 - 19/07/2012
 ------------------
 
