@@ -24,6 +24,7 @@ setup(
         "usertools": [
             "locale/*/LC_MESSAGES/django.*",
             "templates/admin/auth/user/*.html",
+            "templates/admin/auth/user/*.txt",
         ],
     },
     classifiers=[
