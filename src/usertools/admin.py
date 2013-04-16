@@ -4,7 +4,7 @@ from functools import partial
 
 from django import template
 from django.conf import settings
-from django.conf.urls.defaults import url, patterns
+from django.conf.urls import url, patterns
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.forms import AdminPasswordChangeForm
 from django.contrib.auth.admin import UserAdmin as UserAdminBase, GroupAdmin as GroupAdminBase

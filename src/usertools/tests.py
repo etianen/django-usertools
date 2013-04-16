@@ -1,7 +1,7 @@
 """Tests for django-usertools."""
 
 from django.contrib import admin
-from django.conf.urls.defaults import patterns, url, include
+from django.conf.urls import patterns, url, include
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User, Group
 from django.core import mail
