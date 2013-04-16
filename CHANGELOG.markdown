@@ -2,6 +2,12 @@ django-usertools changelog
 ==========================
 
 
+1.0.3 - 16/04/2013
+------------------
+
+* Using Django 1.5-style url imports to suppress warning.
+
+
 1.0.2 - 05/09/2012
 ------------------
 

@@ -3,12 +3,11 @@ from distutils.core import setup
 
 setup(
     name = "django-usertools",
-    version = "1.0.2",
+    version = "1.0.3",
     description = "A fire-and-forget enhancement to the Django user admin.",
     author = "Dave Hall",
     author_email = "dave@etianen.com",
     url = "http://github.com/etianen/django-usertools",
-    download_url = "http://github.com/downloads/etianen/django-usertools/django-usertools-1.0.2.tar.gz",
     zip_safe = False,
     packages = [
         "usertools",
