@@ -11,7 +11,7 @@ class Command(NoArgsCommand):
     
     help = "Creates or maintains an initial set of authentication groups."
     
-    @transaction.commit_on_success
+    @transaction.atomic()
     def handle_noargs(self, **kwargs):
         """Runs the command."""
         verbosity = int(kwargs.get("verbosity"))

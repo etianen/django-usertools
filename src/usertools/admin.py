@@ -248,7 +248,7 @@ class UserAdmin(UserAdminBase, AdminBase):
         ) + urlpatterns
         return urlpatterns
         
-    @transaction.commit_on_success
+    @transaction.atomic()
     def invite_user(self, request):
         """Sends an invitation email with a login token."""
         # Check for add and change permission.
@@ -361,9 +361,9 @@ class GroupAdmin(GroupAdminBase, AdminBase):
     
     list_display= ("name", "get_user_count",)
     
-    def queryset(self, request):
+    def get_queryset(self, request, *args, **kwargs):
         """Modifies the queryset."""
-        qs = super(GroupAdmin, self).queryset(request)
+        qs = super(GroupAdmin, self).get_queryset(request, *args, **kwargs)
         qs = qs.annotate(
             user_count = Count("user"),
         )
