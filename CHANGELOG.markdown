@@ -2,6 +2,12 @@ django-usertools changelog
 ==========================
 
 
+1.0.5 - 12/05/2014
+------------------
+
+* Fixing admin email sending for Django 1.7.
+
+
 1.0.4 - 12/05/2014
 ------------------
 
