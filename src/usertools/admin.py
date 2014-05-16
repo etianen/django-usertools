@@ -20,6 +20,7 @@ from django.db.models import Count
 from django.shortcuts import render, redirect
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import int_to_base36, base36_to_int
+from django.utils.encoding import force_text
 
 from usertools.forms import UserCreationForm, UserInviteForm, UserChangeForm
 
@@ -206,7 +207,7 @@ class UserAdmin(UserAdminBase, AdminBase):
         # Add in the group actions.
         groups = [
             ("{slug}_{pk}".format(
-                slug = unicode(group).replace(" ", "_").lower(),
+                slug = force_text(group).replace(" ", "_").lower(),
                 pk = group.pk,
             ), group)
             for group
