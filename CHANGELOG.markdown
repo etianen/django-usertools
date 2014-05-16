@@ -2,6 +2,13 @@ django-usertools changelog
 ==========================
 
 
+1.0.6 - 16/05/2014
+------------------
+
+* Fixing admin for Django 1.6.
+* Python 3 compatibility.
+
+
 1.0.5 - 12/05/2014
 ------------------
 

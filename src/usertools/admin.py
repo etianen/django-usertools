@@ -1,5 +1,7 @@
 """Admin classes for django-usertools."""
 
+from __future__ import unicode_literals
+
 from functools import partial
 
 from django import template
@@ -128,7 +130,7 @@ class UserAdmin(UserAdminBase, AdminBase):
             })
         )
         send_mail(
-            u"{prefix}You have been invited to create an account".format(
+            "{prefix}You have been invited to create an account".format(
                 prefix = settings.EMAIL_SUBJECT_PREFIX,
             ),
             template.loader.render_to_string("admin/auth/user/invite_email.txt", {
@@ -137,7 +139,7 @@ class UserAdmin(UserAdminBase, AdminBase):
                 "sender": request.user,
             }),
             settings.DEFAULT_FROM_EMAIL,
-            (u"{first_name} {last_name} <{email}>".format(
+            ("{first_name} {last_name} <{email}>".format(
                 first_name = user.first_name,
                 last_name = user.last_name,
                 email = user.email,
@@ -150,7 +152,7 @@ class UserAdmin(UserAdminBase, AdminBase):
         for user in qs.iterator():
             self.do_send_invitation_email(request, user)
             count += 1
-        self.message_user(request, u"{count} {item} sent an invitation email.".format(
+        self.message_user(request, "{count} {item} sent an invitation email.".format(
             count = count,
             item = count != 1 and "users were" or "user was",
         ))
@@ -160,7 +162,7 @@ class UserAdmin(UserAdminBase, AdminBase):
         """Activates the selected users."""
         qs.update(is_active=True)
         count = qs.count()
-        self.message_user(request, u"{count} {item} marked as active.".format(
+        self.message_user(request, "{count} {item} marked as active.".format(
             count = count,
             item = count != 1 and "users were" or "user was",
         ))
@@ -170,7 +172,7 @@ class UserAdmin(UserAdminBase, AdminBase):
         """Deactivates the selected users."""
         qs.update(is_active=False)
         count = qs.count()
-        self.message_user(request, u"{count} {item} marked as inactive.".format(
+        self.message_user(request, "{count} {item} marked as inactive.".format(
             count = count,
             item = count != 1 and "users were" or "user was",
         ))
@@ -181,7 +183,7 @@ class UserAdmin(UserAdminBase, AdminBase):
         for user in qs:
             user.groups.add(group)
         count = len(qs)
-        self.message_user(request, u"{count} {item} added to {group}.".format(
+        self.message_user(request, "{count} {item} added to {group}.".format(
             count = count,
             item = count != 1 and "users were" or "user was",
             group = group,
@@ -192,7 +194,7 @@ class UserAdmin(UserAdminBase, AdminBase):
         for user in qs:
             user.groups.remove(group)
         count = len(qs)
-        self.message_user(request, u"{count} {item} removed from {group}.".format(
+        self.message_user(request, "{count} {item} removed from {group}.".format(
             count = count,
             item = count != 1 and "users were" or "user was",
             group = group,
@@ -203,7 +205,7 @@ class UserAdmin(UserAdminBase, AdminBase):
         actions = super(UserAdmin, self).get_actions(request)
         # Add in the group actions.
         groups = [
-            (u"{slug}_{pk}".format(
+            ("{slug}_{pk}".format(
                 slug = unicode(group).replace(" ", "_").lower(),
                 pk = group.pk,
             ), group)
@@ -212,7 +214,7 @@ class UserAdmin(UserAdminBase, AdminBase):
         ]
         # Create the add actions.
         for group_slug, group in groups:
-            add_action_name = u"add_selected_to_{group_slug}".format(
+            add_action_name = "add_selected_to_{group_slug}".format(
                 group_slug = group_slug,
             )
             actions[add_action_name] = (
@@ -224,7 +226,7 @@ class UserAdmin(UserAdminBase, AdminBase):
             )
         # Create the remove actions.
         for group_slug, group in groups:
-            remove_action_name = u"remove_selected_from_{group_slug}".format(
+            remove_action_name = "remove_selected_from_{group_slug}".format(
                 group_slug = group_slug,
             )
             actions[remove_action_name] = (
@@ -274,7 +276,7 @@ class UserAdmin(UserAdminBase, AdminBase):
                 # Send an invitation email.
                 self.do_send_invitation_email(request, user)
                 # Message the user.
-                self.message_user(request, u"An invitation email has been sent to {email}.".format(
+                self.message_user(request, "An invitation email has been sent to {email}.".format(
                     email = user.email,
                 ))
                 # Redirect as appropriate.
