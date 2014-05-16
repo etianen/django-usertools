@@ -100,7 +100,7 @@ class UserAdminTest(AdminTestBase):
             "action": "deactivate_selected",
             "_selected_action": self.user.id,
         })
-        self.assertRedirects(response, self.changelist_url)
+        self.assertRedirects(response, self.changelist_url, fetch_redirect_response=False)
         self.assertEqual(User.objects.get(id=self.user.id).is_active, False)
         
     def testAddSelectedToGroupAction(self):
@@ -184,12 +184,12 @@ class GroupAdminTest(AdminTestBase):
         # Check the groups is present in the change list.
         response = self.client.get(changelist_url)
         self.assertContains(response, "Foo group")
-        self.assertContains(response, "<td>0</td>")
+        self.assertContains(response, ">0</td>")
         # Add a user, and check that the member count has increased.
         self.user.groups.add(group)
         response = self.client.get(changelist_url)
         self.assertContains(response, "Foo group")
-        self.assertContains(response, "<td>1</td>")
+        self.assertContains(response, ">1</td>")
         
         
 class SyncGroupsCommandTest(TestCase):
