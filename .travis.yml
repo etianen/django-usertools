@@ -10,7 +10,7 @@ env:
 matrix:
   exclude:
     - python: 2.6
-      env: DJANGO=django==1.6.5
+      env: DJANGO="-e git+https://github.com/django/django@stable/1.7.x#egg=Django"
 install:
   - pip install $DJANGO
   - python setup.py -q install
