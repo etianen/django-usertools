@@ -10,6 +10,6 @@ env:
 install:
   - pip install $DJANGO
   - python setup.py -q install
-script: python src/test_project/manage.py test reversion
+script: python src/test_project/manage.py test usertools
 notifications:
   email: false
