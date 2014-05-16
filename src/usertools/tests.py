@@ -92,7 +92,8 @@ class UserAdminTest(AdminTestBase):
             "action": "activate_selected",
             "_selected_action": user.id,
         })
-        self.assertRedirects(response, self.changelist_url)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], "http://testserver" + self.changelist_url)
         self.assertEqual(User.objects.get(id=user.id).is_active, True)
         
     def testDeactivateSelectedAction(self):
@@ -100,7 +101,8 @@ class UserAdminTest(AdminTestBase):
             "action": "deactivate_selected",
             "_selected_action": self.user.id,
         })
-        self.assertRedirects(response, self.changelist_url, fetch_redirect_response=False)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], "http://testserver" + self.changelist_url)
         self.assertEqual(User.objects.get(id=self.user.id).is_active, False)
         
     def testAddSelectedToGroupAction(self):
@@ -111,7 +113,8 @@ class UserAdminTest(AdminTestBase):
             "action": "add_selected_to_foo_group_{pk}".format(pk=group.pk),
             "_selected_action": self.user.id,
         })
-        self.assertRedirects(response, self.changelist_url)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], "http://testserver" + self.changelist_url)
         self.assertEqual(list(User.objects.get(id=self.user.id).groups.all()), [group])
         
     def testRemoveSelectedFromGroupAction(self):
@@ -124,7 +127,8 @@ class UserAdminTest(AdminTestBase):
             "action": "remove_selected_from_foo_group_{pk}".format(pk=group.pk),
             "_selected_action": self.user.id,
         })
-        self.assertRedirects(response, self.changelist_url)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], "http://testserver" + self.changelist_url)
         self.assertEqual(list(User.objects.get(id=self.user.id).groups.all()), [])
     
     def testSendInvitationEmailAction(self):
@@ -132,7 +136,8 @@ class UserAdminTest(AdminTestBase):
             "action": "invite_selected",
             "_selected_action": self.user.id,
         })
-        self.assertRedirects(response, self.changelist_url)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], "http://testserver" + self.changelist_url)
         self.assertEqual(len(mail.outbox), 1)
         
     def testInviteUser(self):
@@ -146,7 +151,8 @@ class UserAdminTest(AdminTestBase):
             "first_name": "Bar",
             "last_name": "Foo",
         })
-        self.assertRedirects(response, "/admin/auth/user/")
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], "http://testserver/admin/auth/user/")
         self.assertEqual(len(mail.outbox), 1)
         user = User.objects.get(username="bar")
         self.assertTrue(user.is_staff)
@@ -162,7 +168,8 @@ class UserAdminTest(AdminTestBase):
             "password1": "password",
             "password2": "password",
         })
-        self.assertRedirects(response, "/admin/")
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], "http://testserver/admin/")
         user = User.objects.get(username=user.username)
         self.assertTrue(user.is_active)
         # Has the link now expired?
