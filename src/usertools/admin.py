@@ -247,25 +247,10 @@ class UserAdmin(UserAdminBase, AdminBase):
         urlpatterns = super(UserAdmin, self).get_urls()
         admin_site = self.admin_site
         admin_view = admin_site.admin_view
-        app_name = admin_site.app_name
         urlpatterns = patterns("",
             # User invite.
             url("^invite/$", admin_view(self.invite_user), name="auth_user_invite"),
             url("^invite/(?P<uidb36>[^-]+)-(?P<token>[^/]+)/$", self.invite_user_confirm, name="auth_user_invite_confirm"),
-            # Password reset workflow.
-            url("^password-reset/$", "django.contrib.auth.views.password_reset", name="password_reset", kwargs={
-                "post_reset_redirect": reverse_lazy("{app_name}:password_reset_done".format(app_name=app_name)),
-                "email_template_name": "admin/auth/user/password_reset_email.txt",
-            }),
-            url("^password-reset/complete/$", "django.contrib.auth.views.password_reset_done", name="password_reset_done"),
-            url("^password-reset/token/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$", "django.contrib.auth.views.password_reset_confirm", name="password_reset_confirm", kwargs={
-                "post_reset_redirect": reverse_lazy("{app_name}:password_reset_complete".format(app_name=app_name)),
-            }),
-            url("^password-reset/token/complete/$", "django.contrib.auth.views.password_reset_complete", name="password_reset_complete", kwargs={
-                "extra_context": {
-                    "login_url": reverse_lazy("{app_name}:index".format(app_name=app_name)),
-                },
-            }),
         ) + urlpatterns
         return urlpatterns
         
