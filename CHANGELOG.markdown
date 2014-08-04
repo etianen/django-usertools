@@ -2,6 +2,12 @@ django-usertools changelog
 ==========================
 
 
+1.0.7 - 04/08/2014
+------------------
+
+* Optional user password reset workflow.
+
+
 1.0.6 - 16/05/2014
 ------------------
 
