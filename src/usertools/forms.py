@@ -1,12 +1,10 @@
 """Forms used by django-usertools."""
 
 from django import forms
-from django.contrib.auth.forms import UserCreationForm as UserCreationFormBase, UserChangeForm as UserChangeFormBase, AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm as UserCreationFormBase
 from django.contrib.auth.models import User, Group
 from django.contrib.admin.widgets import FilteredSelectMultiple, AdminTextInputWidget
 from django.utils.text import capfirst
-
-from usertools.models import patch_username_field
 
 
 def get_default_groups():
@@ -35,10 +33,6 @@ class UserCreationForm(UserCreationFormBase):
 
     class Meta:
         fields = ("username", "is_staff", "first_name", "last_name", "email", "groups", "user_permissions", "is_superuser",)
-
-
-if "username" in UserCreationForm.base_fields:
-    patch_username_field(UserCreationForm.base_fields["username"])
         
         
 class UserInviteForm(forms.ModelForm):
@@ -80,18 +74,3 @@ class UserInviteForm(forms.ModelForm):
     class Meta:
         fields = ("username", "first_name", "last_name", "email", "groups", "user_permissions", "is_superuser",)
         model = User
-        
-        
-class UserChangeForm(UserChangeFormBase):
-    
-    """A customized user change form."""
-    
-    def clean_password(self):
-        # HACK: Needed to prevent crash when saving user.
-        return self.initial.get("password", "")
-    
-    
-patch_username_field(UserChangeForm.base_fields["username"])
-
-
-patch_username_field(AuthenticationForm.base_fields["username"])

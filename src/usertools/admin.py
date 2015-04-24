@@ -22,7 +22,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import int_to_base36, base36_to_int
 from django.utils.encoding import force_text
 
-from usertools.forms import UserCreationForm, UserInviteForm, UserChangeForm
+from usertools.forms import UserCreationForm, UserInviteForm
 
 
 # Mix in watson search, if available.
@@ -42,8 +42,6 @@ class UserAdmin(UserAdminBase, AdminBase):
     invite_form = UserInviteForm
     
     invite_confirm_form = AdminPasswordChangeForm
-    
-    form = UserChangeForm
     
     add_form_template = "admin/auth/user/add_form_usertools.html"
     
