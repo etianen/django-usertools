@@ -5,8 +5,8 @@ python:
   - 3.2
   - 3.3
 env:
-  - DJANGO=django==1.6.5
-  - DJANGO="-e git+https://github.com/django/django@stable/1.7.x#egg=Django"
+  - DJANGO=django==1.8
+  - DJANGO=django==1.7.7
 matrix:
   exclude:
     - python: 2.6

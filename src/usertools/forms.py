@@ -37,7 +37,8 @@ class UserCreationForm(UserCreationFormBase):
         fields = ("username", "is_staff", "first_name", "last_name", "email", "groups", "user_permissions", "is_superuser",)
 
 
-patch_username_field(UserCreationForm.base_fields["username"])
+if "username" in UserCreationForm.base_fields:
+    patch_username_field(UserCreationForm.base_fields["username"])
         
         
 class UserInviteForm(forms.ModelForm):
