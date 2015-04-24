@@ -2,6 +2,13 @@ django-usertools changelog
 ==========================
 
 
+1.0.8 - 24/04/2015
+------------------
+
+* Django 1.8 compatibility.
+* Removing migrations for User.username field length.
+
+
 1.0.7 - 04/08/2014
 ------------------
 
