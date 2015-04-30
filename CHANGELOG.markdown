@@ -2,6 +2,12 @@ django-usertools changelog
 ==========================
 
 
+1.0.10 - 30/04/2015
+------------------
+
+* Fixing crash when updating user in admin.
+
+
 1.0.9 - 30/04/2015
 ------------------
 
