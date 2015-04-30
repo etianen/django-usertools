@@ -1,9 +1,10 @@
 {% extends "admin/base_site.html" %}
+{% load staticfiles %}
 
 
 {% block extrastyle %}
     {{block.super}}
-    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}admin/css/forms.css" />
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/forms.css' %}"/>
 {% endblock %}
 
 
