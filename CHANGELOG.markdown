@@ -2,6 +2,12 @@ django-usertools changelog
 ==========================
 
 
+1.0.9 - 30/04/2015
+------------------
+
+* Improving appearance of templates in Django 1.8.
+
+
 1.0.8 - 24/04/2015
 ------------------
 
