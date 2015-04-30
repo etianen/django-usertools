@@ -6,6 +6,7 @@ django-usertools changelog
 ------------------
 
 * Improving appearance of templates in Django 1.8.
+* Dropping Django 1.7 compatibility.
 
 
 1.0.8 - 24/04/2015
