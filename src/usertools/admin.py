@@ -22,7 +22,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import int_to_base36, base36_to_int
 from django.utils.encoding import force_text
 
-from usertools.forms import UserCreationForm, UserInviteForm
+from usertools.forms import UserCreationForm, UserChangeForm, UserInviteForm
 
 
 # Mix in watson search, if available.
@@ -38,6 +38,8 @@ class UserAdmin(UserAdminBase, AdminBase):
     """Enhanced user admin class."""
     
     add_form = UserCreationForm
+
+    form = UserChangeForm
     
     invite_form = UserInviteForm
     
