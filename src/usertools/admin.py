@@ -288,21 +288,21 @@ class UserAdmin(UserAdminBase, AdminBase):
         admin_form = admin.helpers.AdminForm(form, self.invite_fieldsets, {})
         # Render the template.
         media = self.media + admin_form.media
-        return render(request, self.invite_form_template, {
-            "title": "Invite user",
-            "opts": self.model._meta,
-            "form": form,
-            "adminform": admin_form,
-            "media": media,
-            "add": True,
-            "change": False,
-            "is_popup": False,
-            "save_as": self.save_as,
-            "has_add_permission": has_add_permission,
-            "has_change_permission": has_change_permission,
-            "has_delete_permission": self.has_delete_permission(request),
-            "show_delete": False,
-        })
+        return render(request, self.invite_form_template, dict(self.admin_site.each_context(request),
+            title = "Invite user",
+            opts = self.model._meta,
+            form = form,
+            adminform = admin_form,
+            media = media,
+            add = True,
+            change = False,
+            is_popup = False,
+            save_as = self.save_as,
+            has_add_permission = has_add_permission,
+            has_change_permission = has_change_permission,
+            has_delete_permission = self.has_delete_permission(request),
+            show_delete = False,
+        ))
         
     def invite_user_confirm(self, request, uidb36, token):
         """Performs confirmation of the invite user email."""
@@ -344,14 +344,14 @@ class UserAdmin(UserAdminBase, AdminBase):
             title = "Welcome to the site!"
         else:
             title = "This link has expired"
-        return render(request, self.invite_confirm_form_template, {
-            "title": title,
-            "opts": self.model._meta,
-            "valid_link": valid_link,
-            "form": form,
-            "adminform": admin_form,
-            "user": user,
-        })
+        return render(request, self.invite_confirm_form_template, dict(self.admin_site.each_context(request),
+            title = title,
+            opts = self.model._meta,
+            valid_link = valid_link,
+            form = form,
+            adminform = admin_form,
+            user = user,
+        ))
     
 
 # Automatcally re-register the User model with the enhanced admin class.    
