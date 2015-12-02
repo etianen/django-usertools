@@ -1,9 +1,9 @@
-from django.conf.urls import url, patterns
+from django.conf.urls import url
 from django.contrib import admin
 from django.core.urlresolvers import reverse_lazy
 
 
-urlpatterns = patterns("",
+urlpatterns = [
     # Password reset workflow.
     url("^password-reset/$", "django.contrib.auth.views.password_reset", name="admin_password_reset", kwargs={
         "email_template_name": "admin/auth/user/password_reset_email.txt",
@@ -15,4 +15,4 @@ urlpatterns = patterns("",
             "login_url": reverse_lazy("{app_name}:index".format(app_name=admin.site.name)),
         },
     }),
-)
+]

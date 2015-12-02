@@ -1,12 +1,12 @@
 """Tests for django-usertools."""
 
 from django.contrib import admin
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url, include
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User, Group
 from django.core import mail
 from django.core.management import call_command
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import int_to_base36
 from django.conf import settings
@@ -16,7 +16,7 @@ from usertools.helpers import get_display_name
 
 
 class HelpersTest(TestCase):
-    
+
     def testDisplayName(self):
         user = User(first_name="Foo", last_name="Bar")
         self.assertEqual(get_display_name(user), "Foo Bar")
@@ -30,7 +30,7 @@ class HelpersTest(TestCase):
 
 
 class TemplateTagsTest(TestCase):
-    
+
     def testDisplayNameFilter(self):
         user = User(first_name="Foo", last_name="Bar")
         self.assertEqual(template.Template("{% load usertools %}{{user|display_name}}").render(template.Context({"user": user})), "Foo Bar")
@@ -42,16 +42,16 @@ class TemplateTagsTest(TestCase):
 admin.autodiscover()
 
 
-urlpatterns = patterns("",
+urlpatterns = [
 
     url("^admin/", include(admin.site.urls)),
 
-)
+]
 
 
+
+@override_settings(ROOT_URLCONF="usertools.tests")
 class AdminTestBase(TestCase):
-
-    urls = "usertools.tests"
 
     def setUp(self):
         # Create a user.
@@ -74,8 +74,8 @@ class AdminTestBase(TestCase):
                 username = "foo",
                 password = "bar",
             )
-        
-        
+
+
 class UserAdminTest(AdminTestBase):
 
     def setUp(self):
@@ -93,18 +93,18 @@ class UserAdminTest(AdminTestBase):
             "_selected_action": user.id,
         })
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response["Location"], "http://testserver" + self.changelist_url)
+        self.assertEqual(response["Location"].replace("http://testserver", ""), self.changelist_url)
         self.assertEqual(User.objects.get(id=user.id).is_active, True)
-        
+
     def testDeactivateSelectedAction(self):
         response = self.client.post(self.changelist_url, {
             "action": "deactivate_selected",
             "_selected_action": self.user.id,
         })
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response["Location"], "http://testserver" + self.changelist_url)
+        self.assertEqual(response["Location"].replace("http://testserver", ""), self.changelist_url)
         self.assertEqual(User.objects.get(id=self.user.id).is_active, False)
-        
+
     def testAddSelectedToGroupAction(self):
         group = Group.objects.create(
             name = "Foo group",
@@ -114,9 +114,9 @@ class UserAdminTest(AdminTestBase):
             "_selected_action": self.user.id,
         })
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response["Location"], "http://testserver" + self.changelist_url)
+        self.assertEqual(response["Location"].replace("http://testserver", ""), self.changelist_url)
         self.assertEqual(list(User.objects.get(id=self.user.id).groups.all()), [group])
-        
+
     def testRemoveSelectedFromGroupAction(self):
         group = Group.objects.create(
             name = "Foo group",
@@ -128,18 +128,18 @@ class UserAdminTest(AdminTestBase):
             "_selected_action": self.user.id,
         })
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response["Location"], "http://testserver" + self.changelist_url)
+        self.assertEqual(response["Location"].replace("http://testserver", ""), self.changelist_url)
         self.assertEqual(list(User.objects.get(id=self.user.id).groups.all()), [])
-    
+
     def testSendInvitationEmailAction(self):
         response = self.client.post(self.changelist_url, {
             "action": "invite_selected",
             "_selected_action": self.user.id,
         })
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response["Location"], "http://testserver" + self.changelist_url)
+        self.assertEqual(response["Location"].replace("http://testserver", ""), self.changelist_url)
         self.assertEqual(len(mail.outbox), 1)
-        
+
     def testInviteUser(self):
         # Try to render the form.
         response = self.client.get("/admin/auth/user/invite/")
@@ -152,7 +152,7 @@ class UserAdminTest(AdminTestBase):
             "last_name": "Foo",
         })
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response["Location"], "http://testserver/admin/auth/user/")
+        self.assertEqual(response["Location"].replace("http://testserver", ""),  "/admin/auth/user/")
         self.assertEqual(len(mail.outbox), 1)
         user = User.objects.get(username="bar")
         self.assertTrue(user.is_staff)
@@ -169,7 +169,7 @@ class UserAdminTest(AdminTestBase):
             "password2": "password",
         })
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response["Location"], "http://testserver/admin/")
+        self.assertEqual(response["Location"].replace("http://testserver", ""), "/admin/")
         user = User.objects.get(username=user.username)
         self.assertTrue(user.is_active)
         # Has the link now expired?
@@ -178,8 +178,8 @@ class UserAdminTest(AdminTestBase):
             "password2": "password",
         })
         self.assertEqual(response.status_code, 200)  # 200 status means an error message.
-        
-        
+
+
 class GroupAdminTest(AdminTestBase):
 
     def testGroupChangeList(self):
@@ -197,8 +197,8 @@ class GroupAdminTest(AdminTestBase):
         response = self.client.get(changelist_url)
         self.assertContains(response, "Foo group")
         self.assertContains(response, ">1</td>")
-        
-        
+
+
 class SyncGroupsCommandTest(TestCase):
 
     def testSyncGroupsCommand(self):

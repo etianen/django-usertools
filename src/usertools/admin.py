@@ -6,7 +6,7 @@ from functools import partial
 
 from django import template
 from django.conf import settings
-from django.conf.urls import url, patterns
+from django.conf.urls import url
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.forms import AdminPasswordChangeForm
 from django.contrib.auth.admin import UserAdmin as UserAdminBase, GroupAdmin as GroupAdminBase
@@ -36,29 +36,29 @@ else:
 class UserAdmin(UserAdminBase, AdminBase):
 
     """Enhanced user admin class."""
-    
+
     add_form = UserCreationForm
 
     form = UserChangeForm
-    
+
     invite_form = UserInviteForm
-    
+
     invite_confirm_form = AdminPasswordChangeForm
-    
+
     add_form_template = "admin/auth/user/add_form_usertools.html"
-    
+
     invite_form_template = "admin/auth/user/invite_form.html"
-    
+
     invite_confirm_form_template = "admin/auth/user/invite_confirm_form.html"
-    
+
     search_fields = ("username", "first_name", "last_name", "email",)
-    
+
     actions = ("invite_selected", "activate_selected", "deactivate_selected",)
-    
+
     list_display = ("username", "first_name", "last_name", "email", "is_staff", "is_active",)
-    
+
     list_filter = ("is_staff", "is_active", "groups",)
-    
+
     fieldsets = (
         (None, {
             "fields": ("username", "is_staff", "is_active",),
@@ -74,7 +74,7 @@ class UserAdmin(UserAdminBase, AdminBase):
             "classes": ("collapse",),
         }),
     )
-    
+
     add_fieldsets = (
         (None, {
             "fields": ("username", "is_staff",),
@@ -93,7 +93,7 @@ class UserAdmin(UserAdminBase, AdminBase):
             "classes": ("collapse",),
         }),
     )
-    
+
     invite_fieldsets = (
         (None, {
             "fields": ("username",),
@@ -109,17 +109,17 @@ class UserAdmin(UserAdminBase, AdminBase):
             "classes": ("collapse",),
         }),
     )
-    
+
     invite_confirm_fieldsets = (
         (None, {
             "fields": ("password1", "password2"),
         }),
     )
-    
+
     filter_horizontal = ("groups", "user_permissions",)
-    
+
     # Custom actions.
-    
+
     def do_send_invitation_email(self, request, user):
         """Sends an invitation email to the given user."""
         confirmation_url = request.build_absolute_uri(
@@ -146,7 +146,7 @@ class UserAdmin(UserAdminBase, AdminBase):
                 email = user.email,
             ),),
         )
-    
+
     def invite_selected(self, request, qs):
         """Sends an invitation email to the selected users."""
         count = 0
@@ -158,7 +158,7 @@ class UserAdmin(UserAdminBase, AdminBase):
             item = count != 1 and "users were" or "user was",
         ))
     invite_selected.short_description = "Invite selected users to the admin system"
-    
+
     def activate_selected(self, request, qs):
         """Activates the selected users."""
         qs.update(is_active=True)
@@ -168,7 +168,7 @@ class UserAdmin(UserAdminBase, AdminBase):
             item = count != 1 and "users were" or "user was",
         ))
     activate_selected.short_description = "Mark selected users as active"
-    
+
     def deactivate_selected(self, request, qs):
         """Deactivates the selected users."""
         qs.update(is_active=False)
@@ -178,7 +178,7 @@ class UserAdmin(UserAdminBase, AdminBase):
             item = count != 1 and "users were" or "user was",
         ))
     deactivate_selected.short_description = "Mark selected users as inactive"
-    
+
     def add_selected_to_group(self, request, qs, group):
         """Adds the selected users to a group."""
         for user in qs:
@@ -189,7 +189,7 @@ class UserAdmin(UserAdminBase, AdminBase):
             item = count != 1 and "users were" or "user was",
             group = group,
         ))
-            
+
     def remove_selected_from_group(self, request, qs, group):
         """Removes the selected users from a group."""
         for user in qs:
@@ -200,7 +200,7 @@ class UserAdmin(UserAdminBase, AdminBase):
             item = count != 1 and "users were" or "user was",
             group = group,
         ))
-    
+
     def get_actions(self, request):
         """Returns the actions this admin class supports."""
         actions = super(UserAdmin, self).get_actions(request)
@@ -239,21 +239,21 @@ class UserAdmin(UserAdminBase, AdminBase):
             )
         # All done!
         return actions
-    
+
     # Custom views.
-    
+
     def get_urls(self):
         """Returns the URLs used by this admin class."""
         urlpatterns = super(UserAdmin, self).get_urls()
         admin_site = self.admin_site
         admin_view = admin_site.admin_view
-        urlpatterns = patterns("",
+        urlpatterns = [
             # User invite.
             url("^invite/$", admin_view(self.invite_user), name="auth_user_invite"),
             url("^invite/(?P<uidb36>[^-]+)-(?P<token>[^/]+)/$", self.invite_user_confirm, name="auth_user_invite_confirm"),
-        ) + urlpatterns
+        ] + urlpatterns
         return urlpatterns
-        
+
     @transaction.atomic()
     def invite_user(self, request):
         """Sends an invitation email with a login token."""
@@ -286,7 +286,7 @@ class UserAdmin(UserAdminBase, AdminBase):
                 return super(UserAdminBase, self).response_add(request, user)  # Using the superclass to avoid the built in munging of the add response.
         else:
             form = InviteForm()
-        # Create the admin form.    
+        # Create the admin form.
         admin_form = admin.helpers.AdminForm(form, self.invite_fieldsets, {})
         # Render the template.
         media = self.media + admin_form.media
@@ -305,7 +305,7 @@ class UserAdmin(UserAdminBase, AdminBase):
             has_delete_permission = self.has_delete_permission(request),
             show_delete = False,
         ))
-        
+
     def invite_user_confirm(self, request, uidb36, token):
         """Performs confirmation of the invite user email."""
         form = None
@@ -354,9 +354,9 @@ class UserAdmin(UserAdminBase, AdminBase):
             adminform = admin_form,
             user = user,
         ))
-    
 
-# Automatcally re-register the User model with the enhanced admin class.    
+
+# Automatcally re-register the User model with the enhanced admin class.
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 
@@ -364,9 +364,9 @@ admin.site.register(User, UserAdmin)
 class GroupAdmin(GroupAdminBase, AdminBase):
 
     """Enhanced group admin class."""
-    
+
     list_display= ("name", "get_user_count",)
-    
+
     def get_queryset(self, request, *args, **kwargs):
         """Modifies the queryset."""
         qs = super(GroupAdmin, self).get_queryset(request, *args, **kwargs)
@@ -374,13 +374,13 @@ class GroupAdmin(GroupAdminBase, AdminBase):
             user_count = Count("user"),
         )
         return qs
-        
+
     def get_user_count(self, obj):
         """Returns the number of users in the given group."""
         return obj.user_count
     get_user_count.short_description = "members"
-    
-    
-# Automatcally re-register the Group model with the enhanced admin class.    
+
+
+# Automatcally re-register the Group model with the enhanced admin class.
 admin.site.unregister(Group)
 admin.site.register(Group, GroupAdmin)

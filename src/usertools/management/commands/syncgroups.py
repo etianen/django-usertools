@@ -1,18 +1,18 @@
 """Creates or maintains an initial set of authentication groups."""
 
-from django.core.management.base import NoArgsCommand
+from django.core.management.base import BaseCommand
 from django.contrib.auth.models import Permission, Group, User
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 from django.db import transaction
 
 
-class Command(NoArgsCommand):
-    
+class Command(BaseCommand):
+
     help = "Creates or maintains an initial set of authentication groups."
-    
+
     @transaction.atomic()
-    def handle_noargs(self, **kwargs):
+    def handle(self, *args, **kwargs):
         """Runs the command."""
         verbosity = int(kwargs.get("verbosity"))
         # Create the administrators group.
