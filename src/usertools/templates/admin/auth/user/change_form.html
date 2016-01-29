@@ -1,7 +1,8 @@
 {% extends "admin/change_form.html" %}
+{% load admin_urls %}
 
 
 {% block object-tools-items %}
-    <li><a href="password/">Change password</a></li>
-    <li><a href="history/">History</a></li>
+    <li><a href="{% url opts|admin_urlname:'password_change' original.pk %}">Change password</a></li>
+    <li><a href="{% url opts|admin_urlname:'history' original.pk %}">History</a></li>
 {% endblock %}
