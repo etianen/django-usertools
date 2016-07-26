@@ -1,10 +1,16 @@
 django-usertools changelog
 ==========================
 
-1.0.13 - 26/07/2016
+1.0.14 - 26/07/2016
 -------------------
 
 * Moved is_superuser flag out of advanced permissions tab, making it more obvious in the UI.
+
+
+1.0.13 - 29/01/2015
+-------------------
+
+* Fixed user password and history links.
 
 
 1.0.12 - 02/12/2015

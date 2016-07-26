@@ -3,7 +3,7 @@ from distutils.core import setup
 
 setup(
     name = "django-usertools",
-    version = "1.0.13",
+    version = "1.0.14",
     description = "A fire-and-forget enhancement to the Django user admin.",
     author = "Dave Hall",
     author_email = "dave@etianen.com",
