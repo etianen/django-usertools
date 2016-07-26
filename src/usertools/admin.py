@@ -66,11 +66,11 @@ class UserAdmin(UserAdminBase, AdminBase):
         ("Personal information", {
             "fields": ("first_name", "last_name", "email",),
         }),
-        ("Groups", {
-            "fields": ("groups",),
+        ("Permissions", {
+            "fields": ("is_superuser", "groups",),
         }),
         ("Advanced permissions", {
-            "fields": ("user_permissions", "is_superuser",),
+            "fields": ("user_permissions",),
             "classes": ("collapse",),
         }),
     )
@@ -85,11 +85,11 @@ class UserAdmin(UserAdminBase, AdminBase):
         ("Personal information", {
             "fields": ("first_name", "last_name", "email",),
         }),
-        ("Groups", {
-            "fields": ("groups",),
+        ("Permissions", {
+            "fields": ("is_superuser", "groups",),
         }),
         ("Advanced permissions", {
-            "fields": ("user_permissions", "is_superuser",),
+            "fields": ("user_permissions",),
             "classes": ("collapse",),
         }),
     )
@@ -101,11 +101,11 @@ class UserAdmin(UserAdminBase, AdminBase):
         ("Personal information", {
             "fields": ("first_name", "last_name", "email",),
         }),
-        ("Groups", {
-            "fields": ("groups",),
+        ("Permissions", {
+            "fields": ("is_superuser", "groups",),
         }),
         ("Advanced permissions", {
-            "fields": ("user_permissions", "is_superuser",),
+            "fields": ("user_permissions",),
             "classes": ("collapse",),
         }),
     )
