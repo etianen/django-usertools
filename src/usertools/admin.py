@@ -124,15 +124,15 @@ class UserAdmin(UserAdminBase, AdminBase):
         """Sends an invitation email to the given user."""
         confirmation_url = request.build_absolute_uri(
             reverse("{admin_site}:auth_user_invite_confirm".format(
-                admin_site = self.admin_site.name,
-            ), kwargs = {
+                admin_site=self.admin_site.name,
+            ), kwargs={
                 "uidb36": int_to_base36(user.id),
                 "token": default_token_generator.make_token(user),
             })
         )
         send_mail(
             "{prefix}You have been invited to create an account".format(
-                prefix = settings.EMAIL_SUBJECT_PREFIX,
+                prefix=settings.EMAIL_SUBJECT_PREFIX,
             ),
             template.loader.render_to_string("admin/auth/user/invite_email.txt", {
                 "user": user,
@@ -141,9 +141,9 @@ class UserAdmin(UserAdminBase, AdminBase):
             }),
             settings.DEFAULT_FROM_EMAIL,
             ("{first_name} {last_name} <{email}>".format(
-                first_name = user.first_name,
-                last_name = user.last_name,
-                email = user.email,
+                first_name=user.first_name,
+                last_name=user.last_name,
+                email=user.email,
             ),),
         )
 
@@ -154,8 +154,8 @@ class UserAdmin(UserAdminBase, AdminBase):
             self.do_send_invitation_email(request, user)
             count += 1
         self.message_user(request, "{count} {item} sent an invitation email.".format(
-            count = count,
-            item = count != 1 and "users were" or "user was",
+            count=count,
+            item=count != 1 and "users were" or "user was",
         ))
     invite_selected.short_description = "Invite selected users to the admin system"
 
@@ -164,8 +164,8 @@ class UserAdmin(UserAdminBase, AdminBase):
         qs.update(is_active=True)
         count = qs.count()
         self.message_user(request, "{count} {item} marked as active.".format(
-            count = count,
-            item = count != 1 and "users were" or "user was",
+            count=count,
+            item=count != 1 and "users were" or "user was",
         ))
     activate_selected.short_description = "Mark selected users as active"
 
@@ -174,8 +174,8 @@ class UserAdmin(UserAdminBase, AdminBase):
         qs.update(is_active=False)
         count = qs.count()
         self.message_user(request, "{count} {item} marked as inactive.".format(
-            count = count,
-            item = count != 1 and "users were" or "user was",
+            count=count,
+            item=count != 1 and "users were" or "user was",
         ))
     deactivate_selected.short_description = "Mark selected users as inactive"
 
@@ -185,9 +185,9 @@ class UserAdmin(UserAdminBase, AdminBase):
             user.groups.add(group)
         count = len(qs)
         self.message_user(request, "{count} {item} added to {group}.".format(
-            count = count,
-            item = count != 1 and "users were" or "user was",
-            group = group,
+            count=count,
+            item=count != 1 and "users were" or "user was",
+            group=group,
         ))
 
     def remove_selected_from_group(self, request, qs, group):
@@ -196,9 +196,9 @@ class UserAdmin(UserAdminBase, AdminBase):
             user.groups.remove(group)
         count = len(qs)
         self.message_user(request, "{count} {item} removed from {group}.".format(
-            count = count,
-            item = count != 1 and "users were" or "user was",
-            group = group,
+            count=count,
+            item=count != 1 and "users were" or "user was",
+            group=group,
         ))
 
     def get_actions(self, request):
@@ -207,8 +207,8 @@ class UserAdmin(UserAdminBase, AdminBase):
         # Add in the group actions.
         groups = [
             ("{slug}_{pk}".format(
-                slug = force_text(group).replace(" ", "_").lower(),
-                pk = group.pk,
+                slug=force_text(group).replace(" ", "_").lower(),
+                pk=group.pk,
             ), group)
             for group
             in Group.objects.all()
@@ -216,25 +216,25 @@ class UserAdmin(UserAdminBase, AdminBase):
         # Create the add actions.
         for group_slug, group in groups:
             add_action_name = "add_selected_to_{group_slug}".format(
-                group_slug = group_slug,
+                group_slug=group_slug,
             )
             actions[add_action_name] = (
                 partial(self.__class__.add_selected_to_group, group=group),
                 add_action_name,
                 "Add selected users to {group}".format(
-                    group = group,
+                    group=group,
                 ),
             )
         # Create the remove actions.
         for group_slug, group in groups:
             remove_action_name = "remove_selected_from_{group_slug}".format(
-                group_slug = group_slug,
+                group_slug=group_slug,
             )
             actions[remove_action_name] = (
                 partial(self.__class__.remove_selected_from_group, group=group),
                 remove_action_name,
                 "Remove selected users from {group}".format(
-                    group = group,
+                    group=group,
                 ),
             )
         # All done!
@@ -250,7 +250,10 @@ class UserAdmin(UserAdminBase, AdminBase):
         urlpatterns = [
             # User invite.
             url("^invite/$", admin_view(self.invite_user), name="auth_user_invite"),
-            url("^invite/(?P<uidb36>[^-]+)-(?P<token>[^/]+)/$", self.invite_user_confirm, name="auth_user_invite_confirm"),
+            url(
+                "^invite/(?P<uidb36>[^-]+)-(?P<token>[^/]+)/$",
+                self.invite_user_confirm, name="auth_user_invite_confirm",
+            ),
         ] + urlpatterns
         return urlpatterns
 
@@ -263,9 +266,10 @@ class UserAdmin(UserAdminBase, AdminBase):
         if not has_add_permission or not has_change_permission:
             raise PermissionDenied
         # Process the form.
-        InviteForm = self.get_form(request,
-            form = self.invite_form,
-            fields = flatten_fieldsets(self.invite_fieldsets),
+        InviteForm = self.get_form(
+            request,
+            form=self.invite_form,
+            fields=flatten_fieldsets(self.invite_fieldsets),
         )
         if request.method == "POST":
             form = InviteForm(request.POST)
@@ -280,30 +284,32 @@ class UserAdmin(UserAdminBase, AdminBase):
                 self.do_send_invitation_email(request, user)
                 # Message the user.
                 self.message_user(request, "An invitation email has been sent to {email}.".format(
-                    email = user.email,
+                    email=user.email,
                 ))
                 # Redirect as appropriate.
-                return super(UserAdminBase, self).response_add(request, user)  # Using the superclass to avoid the built in munging of the add response.
+                # Using the superclass to avoid the built in munging of the add response.
+                return super(UserAdminBase, self).response_add(request, user)
         else:
             form = InviteForm()
         # Create the admin form.
         admin_form = admin.helpers.AdminForm(form, self.invite_fieldsets, {})
         # Render the template.
         media = self.media + admin_form.media
-        return render(request, self.invite_form_template, dict(self.admin_site.each_context(request),
-            title = "Invite user",
-            opts = self.model._meta,
-            form = form,
-            adminform = admin_form,
-            media = media,
-            add = True,
-            change = False,
-            is_popup = False,
-            save_as = self.save_as,
-            has_add_permission = has_add_permission,
-            has_change_permission = has_change_permission,
-            has_delete_permission = self.has_delete_permission(request),
-            show_delete = False,
+        return render(request, self.invite_form_template, dict(
+            self.admin_site.each_context(request),
+            title="Invite user",
+            opts=self.model._meta,
+            form=form,
+            adminform=admin_form,
+            media=media,
+            add=True,
+            change=False,
+            is_popup=False,
+            save_as=self.save_as,
+            has_add_permission=has_add_permission,
+            has_change_permission=has_change_permission,
+            has_delete_permission=self.has_delete_permission(request),
+            show_delete=False,
         ))
 
     def invite_user_confirm(self, request, uidb36, token):
@@ -334,9 +340,12 @@ class UserAdmin(UserAdminBase, AdminBase):
                         user = auth.authenticate(username=user.username, password=form.cleaned_data["password1"])
                         auth.login(request, user)
                         # Message and redirect.
-                        self.message_user(request, "Thanks for signing up! We've saved your password and logged you in.")
+                        self.message_user(
+                            request,
+                            "Thanks for signing up! We've saved your password and logged you in.",
+                        )
                         return redirect("{admin_site}:index".format(
-                            admin_site = self.admin_site.name,
+                            admin_site=self.admin_site.name,
                         ))
                 else:
                     form = self.invite_confirm_form(user)
@@ -346,13 +355,14 @@ class UserAdmin(UserAdminBase, AdminBase):
             title = "Welcome to the site!"
         else:
             title = "This link has expired"
-        return render(request, self.invite_confirm_form_template, dict(self.admin_site.each_context(request),
-            title = title,
-            opts = self.model._meta,
-            valid_link = valid_link,
-            form = form,
-            adminform = admin_form,
-            user = user,
+        return render(request, self.invite_confirm_form_template, dict(
+            self.admin_site.each_context(request),
+            title=title,
+            opts=self.model._meta,
+            valid_link=valid_link,
+            form=form,
+            adminform=admin_form,
+            user=user,
         ))
 
 
@@ -365,13 +375,13 @@ class GroupAdmin(GroupAdminBase, AdminBase):
 
     """Enhanced group admin class."""
 
-    list_display= ("name", "get_user_count",)
+    list_display = ("name", "get_user_count",)
 
     def get_queryset(self, request, *args, **kwargs):
         """Modifies the queryset."""
         qs = super(GroupAdmin, self).get_queryset(request, *args, **kwargs)
         qs = qs.annotate(
-            user_count = Count("user"),
+            user_count=Count("user"),
         )
         return qs
 

@@ -1,7 +1,7 @@
 """Tests for django-usertools."""
 
 from django.contrib import admin
-from django.conf.urls import url, include
+from django.conf.urls import url
 from django.urls import reverse
 from django.contrib.auth.models import User, Group
 from django.core import mail
@@ -33,10 +33,16 @@ class TemplateTagsTest(TestCase):
 
     def testDisplayNameFilter(self):
         user = User(first_name="Foo", last_name="Bar")
-        self.assertEqual(template.Template("{% load usertools %}{{user|display_name}}").render(template.Context({"user": user})), "Foo Bar")
+        self.assertEqual(template.Template("{% load usertools %}{{user|display_name}}").render(
+            template.Context({"user": user}),
+        ), "Foo Bar")
         user = User()
-        self.assertEqual(template.Template("{% load usertools %}{{user|display_name}}").render(template.Context({"user": user})), "Anonymous")
-        self.assertEqual(template.Template("{% load usertools %}{{user|display_name:'Baz'}}").render(template.Context({"user": user})), "Baz")
+        self.assertEqual(template.Template("{% load usertools %}{{user|display_name}}").render(
+            template.Context({"user": user}),
+        ), "Anonymous")
+        self.assertEqual(template.Template("{% load usertools %}{{user|display_name:'Baz'}}").render(
+            template.Context({"user": user}),
+        ), "Baz")
 
 
 admin.autodiscover()
@@ -49,30 +55,32 @@ urlpatterns = [
 ]
 
 
-
 @override_settings(ROOT_URLCONF="usertools.tests")
 class AdminTestBase(TestCase):
 
     def setUp(self):
         # Create a user.
         self.user = User(
-            username = "foo",
-            is_staff = True,
-            is_superuser = True,
+            username="foo",
+            is_staff=True,
+            is_superuser=True,
         )
         self.user.set_password("bar")
         self.user.save()
         # Log the user in.
         if hasattr(self, "settings"):
-            with self.settings(INSTALLED_APPS=tuple(set(tuple(settings.INSTALLED_APPS) + ("django.contrib.sessions",)))):  # HACK: Without this the client won't log in, for some reason.
+            # HACK: Without this the client won't log in, for some reason.
+            with self.settings(
+                INSTALLED_APPS=tuple(set(tuple(settings.INSTALLED_APPS) + ("django.contrib.sessions",))),
+            ):
                 self.client.login(
-                    username = "foo",
-                    password = "bar",
+                    username="foo",
+                    password="bar",
                 )
         else:
             self.client.login(
-                username = "foo",
-                password = "bar",
+                username="foo",
+                password="bar",
             )
 
 
@@ -84,8 +92,8 @@ class UserAdminTest(AdminTestBase):
 
     def testActivateSelectedAction(self):
         user = User.objects.create(
-            username = "baz",
-            is_active = False,
+            username="baz",
+            is_active=False,
         )
         # Activate the user.
         response = self.client.post(self.changelist_url, {
@@ -107,7 +115,7 @@ class UserAdminTest(AdminTestBase):
 
     def testAddSelectedToGroupAction(self):
         group = Group.objects.create(
-            name = "Foo group",
+            name="Foo group",
         )
         response = self.client.post(self.changelist_url, {
             "action": "add_selected_to_foo_group_{pk}".format(pk=group.pk),
@@ -119,7 +127,7 @@ class UserAdminTest(AdminTestBase):
 
     def testRemoveSelectedFromGroupAction(self):
         group = Group.objects.create(
-            name = "Foo group",
+            name="Foo group",
         )
         self.user.groups.add(group)
         self.assertEqual(list(User.objects.get(id=self.user.id).groups.all()), [group])
@@ -160,7 +168,7 @@ class UserAdminTest(AdminTestBase):
         # Log out from the admin system.
         self.client.logout()
         # Try to complete the signup.
-        confirmation_url = reverse("admin:auth_user_invite_confirm", kwargs = {
+        confirmation_url = reverse("admin:auth_user_invite_confirm", kwargs={
             "uidb36": int_to_base36(user.id),
             "token": default_token_generator.make_token(user),
         })
@@ -185,7 +193,7 @@ class GroupAdminTest(AdminTestBase):
     def testGroupChangeList(self):
         # Create a group.
         group = Group.objects.create(
-            name = "Foo group",
+            name="Foo group",
         )
         changelist_url = reverse("admin:auth_group_changelist")
         # Check the groups is present in the change list.

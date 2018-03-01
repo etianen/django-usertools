@@ -2,14 +2,14 @@ from distutils.core import setup
 
 
 setup(
-    name = "django-usertools",
-    version = "1.0.14",
-    description = "A fire-and-forget enhancement to the Django user admin.",
-    author = "Dave Hall",
-    author_email = "dave@etianen.com",
-    url = "http://github.com/etianen/django-usertools",
-    zip_safe = False,
-    packages = [
+    name="django-usertools",
+    version="1.0.14",
+    description="A fire-and-forget enhancement to the Django user admin.",
+    author="Dave Hall",
+    author_email="dave@etianen.com",
+    url="http://github.com/etianen/django-usertools",
+    zip_safe=False,
+    packages=[
         "usertools",
         "usertools.management",
         "usertools.management.commands",
@@ -18,10 +18,10 @@ setup(
     install_requires=[
         "django>=1.8",
     ],
-    package_dir = {
+    package_dir={
         "": "src",
     },
-    package_data = {
+    package_data={
         "usertools": [
             "locale/*/LC_MESSAGES/django.*",
             "templates/admin/auth/user/*.html",
