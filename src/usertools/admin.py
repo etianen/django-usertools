@@ -13,7 +13,10 @@ from django.contrib.auth.admin import UserAdmin as UserAdminBase, GroupAdmin as 
 from django.contrib import admin, auth
 from django.contrib.admin.utils import flatten_fieldsets
 from django.core.exceptions import PermissionDenied
-from django.urls import reverse
+try:
+    from django.urls import reverse
+except ImportError:  # Django < 1.10 pragma: no cover
+    from django.core.urlresolvers import reverse
 from django.core.mail import send_mail
 from django.db import transaction
 from django.db.models import Count

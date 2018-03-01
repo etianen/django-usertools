@@ -2,7 +2,10 @@
 
 from django.contrib import admin
 from django.conf.urls import url
-from django.urls import reverse
+try:
+    from django.urls import reverse
+except ImportError:  # Django < 1.10 pragma: no cover
+    from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User, Group
 from django.core import mail
 from django.core.management import call_command

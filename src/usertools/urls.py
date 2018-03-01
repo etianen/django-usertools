@@ -1,6 +1,9 @@
 from django.conf.urls import url
 from django.contrib import admin
-from django.urls import reverse_lazy
+try:
+    from django.urls import reverse_lazy
+except ImportError:  # Django < 1.10 pragma: no cover
+    from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth import views as auth_views
 
 
