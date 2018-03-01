@@ -1,14 +1,42 @@
+sudo: false
 language: python
 python:
-  - 2.7
-  - 3.4
+  - 3.6
   - 3.5
+  - 2.7
 env:
-  - DJANGO=django==1.9.0
-  - DJANGO=django==1.8.7
+  global:
+    - PYTHONWARNINGS=default,ignore::PendingDeprecationWarning,ignore::ResourceWarning
+    - DJANGO_DATABASE_USER_POSTGRES=postgres
+    - DJANGO_DATABASE_USER_MYSQL=travis
+  matrix:
+    - DJANGO='>=2.0,<2.1'
+    - DJANGO='>=1.11,<1.12'
+    - DJANGO='>=1.10,<1.11'
+    - DJANGO='>=1.9,<1.10'
+    - DJANGO='>=1.8,<1.9'
+matrix:
+  fast_finish: true
+  exclude:
+    - python: 2.7
+      env: DJANGO='>=2.0,<2.1'
 install:
-  - pip install $DJANGO
-  - pip install -e .
-script: python src/test_project/manage.py test usertools
+  - pip install flake8 coverage django$DJANGO -e .
+script:
+  - flake8
+  - coverage run src/test_project/manage.py test usertools
+after_success:
+  - coverage report
+deploy:
+  provider: pypi
+  user: etianen
+  password:
+    secure: "Sb0C8fkf5x1M1TBKJ9akyHf4mIZYq9ejo0iLXxutKoQe1W5ntkGWpwOqAWTEYepDKmqkmfN65z/5hq08u42ANiwJU0WqeMM+XEJTglzcFcjRUPnaMqV/bRWI7v3Hl+GZLYnOMN0rTHyugshpNbj00V0pYiDRIa7SmhxeGeIS25g="
+  on:
+    tags: true
+    condition: $DJANGO = '>=2.0,<2.1'
+    python: 3.6
+    repo: etianen/django-usertools
+  distributions: sdist
 notifications:
   email: false

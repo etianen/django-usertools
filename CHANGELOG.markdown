@@ -1,6 +1,12 @@
 django-usertools changelog
 ==========================
 
+1.0.15 - 01/03/2018
+-------------------
+
+* Django 2.0 compatibility fixes (@fabiopintodacosta).
+
+
 1.0.14 - 26/07/2016
 -------------------
 

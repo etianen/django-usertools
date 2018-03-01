@@ -15,6 +15,9 @@ setup(
         "usertools.management.commands",
         "usertools.templatetags",
     ],
+    install_requires=[
+        "django>=1.8",
+    ],
     package_dir = {
         "": "src",
     },
