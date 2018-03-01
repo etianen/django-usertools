@@ -15,7 +15,7 @@ from django.contrib.admin.utils import flatten_fieldsets
 from django.core.exceptions import PermissionDenied
 try:
     from django.core.urlresolvers import reverse
-except ModuleNotFoundError:
+except (ImportError, ModuleNotFoundError,):
     from django.urls import reverse
 from django.core.mail import send_mail
 from django.db import transaction
