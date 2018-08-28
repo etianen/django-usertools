@@ -5,13 +5,12 @@ TEMPLATE_DEBUG = DEBUG
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'test_project.db',                      # Or path to database file if using sqlite3.
-        # The following settings are not used with sqlite3:
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'test_project.db',
         'USER': '',
         'PASSWORD': '',
-        'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
-        'PORT': '',                      # Set to empty string for default.
+        'HOST': '',
+        'PORT': '',
     }
 }
 
@@ -73,16 +72,14 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '-0xxc*v@#j1kax(y=7+a^)32pa=a%y=ck6lolw=t5j2%h%sl(j'
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    "django.contrib.auth.middleware.SessionAuthenticationMiddleware",
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
