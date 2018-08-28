@@ -266,7 +266,10 @@ class UserAdmin(UserAdminBase, AdminBase):
         # Check for add and change permission.
         has_add_permission = self.has_add_permission(request)
         has_change_permission = self.has_change_permission(request)
-        has_view_permission = self.has_view_permission(request)
+        try:
+            has_view_permission = self.has_view_permission(request)
+        except AttributeError:
+            has_view_permission = True
         if not has_add_permission or not has_change_permission:
             raise PermissionDenied
         # Process the form.
