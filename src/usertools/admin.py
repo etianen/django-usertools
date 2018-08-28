@@ -302,7 +302,8 @@ class UserAdmin(UserAdminBase, AdminBase):
         admin_form = admin.helpers.AdminForm(form, self.invite_fieldsets, {})
         # Render the template.
         media = self.media + admin_form.media
-        return render(request, self.invite_form_template, dict(self.admin_site.each_context(request),
+        return render(request, self.invite_form_template, dict(
+            self.admin_site.each_context(request),
             title = "Invite user",
             opts = self.model._meta,
             form = form,
