@@ -1,6 +1,7 @@
 sudo: false
 language: python
 python:
+  - 3.7
   - 3.6
   - 3.5
   - 2.7
@@ -10,6 +11,7 @@ env:
     - DJANGO_DATABASE_USER_POSTGRES=postgres
     - DJANGO_DATABASE_USER_MYSQL=travis
   matrix:
+    - DJANGO='>=2.1,<2.2'
     - DJANGO='>=2.0,<2.1'
     - DJANGO='>=1.11,<1.12'
     - DJANGO='>=1.10,<1.11'
@@ -20,6 +22,8 @@ matrix:
   exclude:
     - python: 2.7
       env: DJANGO='>=2.0,<2.1'
+    - python: 2.7
+      env: DJANGO='>=2.1,<2.2'
 install:
   - pip install flake8 coverage django$DJANGO -e .
 script:
@@ -34,7 +38,7 @@ deploy:
     secure: "Sb0C8fkf5x1M1TBKJ9akyHf4mIZYq9ejo0iLXxutKoQe1W5ntkGWpwOqAWTEYepDKmqkmfN65z/5hq08u42ANiwJU0WqeMM+XEJTglzcFcjRUPnaMqV/bRWI7v3Hl+GZLYnOMN0rTHyugshpNbj00V0pYiDRIa7SmhxeGeIS25g="
   on:
     tags: true
-    condition: $DJANGO = '>=2.0,<2.1'
+    condition: $DJANGO = '>=2.1,<2.2'
     python: 3.6
     repo: etianen/django-usertools
   distributions: sdist
