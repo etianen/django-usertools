@@ -266,6 +266,10 @@ class UserAdmin(UserAdminBase, AdminBase):
         # Check for add and change permission.
         has_add_permission = self.has_add_permission(request)
         has_change_permission = self.has_change_permission(request)
+        try:
+            has_view_permission = self.has_view_permission(request)
+        except AttributeError:
+            has_view_permission = True
         if not has_add_permission or not has_change_permission:
             raise PermissionDenied
         # Process the form.
@@ -313,6 +317,8 @@ class UserAdmin(UserAdminBase, AdminBase):
             has_change_permission=has_change_permission,
             has_delete_permission=self.has_delete_permission(request),
             show_delete=False,
+            has_view_permission=has_view_permission,
+            has_editable_inline_admin_formsets=True,
         ))
 
     def invite_user_confirm(self, request, uidb36, token):
